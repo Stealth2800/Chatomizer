@@ -9,28 +9,7 @@
     <version>1.0</version>
     <name>Chatomizer</name>
 
-    <repositories>
-        <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>vault-repo</id>
-            <url>http://ci.herocraftonline.com/plugin/repository/everything/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>[1.7,)</version>
-        </dependency>
-        <dependency>
-            <groupId>net.milkbowl.vault</groupId>
-            <artifactId>Vault</artifactId>
-            <version>[1.2,)</version>
-        </dependency>
         <dependency>
             <groupId>com.stealthyone.mcb</groupId>
             <artifactId>stbukkitlib</artifactId>
@@ -59,7 +38,7 @@
             </resource>
         </resources>
         <defaultGoal>clean install</defaultGoal>
-        <finalName>${project.artifactId} v${project.version}-b${buildNumber}</finalName>
+        <finalName>${project.name} v${project.version}-b${buildNumber}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
