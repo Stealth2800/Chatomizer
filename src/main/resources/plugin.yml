@@ -1,0 +1,11 @@
+name: ${project.name}
+version: ${project.version}
+description: Basic chat plugin that allows players to customize their chat format
+depend: [StBukkitLib, Vault]
+softdepend: []
+author: Stealth2800
+website: http://stealthyone.com/bukkit
+main: com.stealthyone.mcb.chatomizer.ChatomizerPlugin
+commands:
+  chatomizer:
+    aliases: [chatomiser, cm, chatstyle, cstyle]
