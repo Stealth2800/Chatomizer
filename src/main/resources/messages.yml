@@ -8,6 +8,6 @@ errors:
   page_must_be_int: '&cPage number must be an integer.'
 notices:
   format_notice: '&3Current format: &6%s&3.'
-  format_set: '&aUpdated current chat format to '&6%s&a'.'
+  format_set: '&aUpdated current chat format to ''&6%s&a''.'
   plugin_reloaded: '&aReloaded plugin data from the disk.'
   plugin_saved: '&aSaved plugin data to the disk.'
