@@ -28,6 +28,7 @@ import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
 import com.stealthyone.mcb.stbukkitlib.backend.exceptions.PlayerIdNotExistsException;
 import com.stealthyone.mcb.stbukkitlib.lib.updating.UpdateChecker;
 import com.stealthyone.mcb.stbukkitlib.lib.utils.PlayerUtils;
+import com.stealthyone.mcb.stbukkitlib.lib.utils.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -50,6 +51,11 @@ public class CmdChatomizer implements CommandExecutor {
                 return true;
             } else {
                 switch (args[0].toLowerCase()) {
+                    /* Default format info */
+                    case "default":
+                        cmdDefault(sender, command, label, args);
+                        return true;
+
                     /* Format info command */
                     case "info":
                         cmdInfo(sender, command, label, args);
@@ -91,6 +97,27 @@ public class CmdChatomizer implements CommandExecutor {
     }
 
     /*
+     * Default format info/set default format
+     */
+    private void cmdDefault(CommandSender sender, Command command, String label, String[] args) {
+        if (!PermissionNode.STYLE_DEFAULT.isAllowed(sender, true)) return;
+
+        if (args.length == 1) {
+            NoticeMessage.FORMAT_DEFAULT_NOTICE.sendTo(sender, Chatomizer.formats.getDefaultFormat().getName());
+        } else {
+            String formatName = args[1];
+            ChatFormat format = Chatomizer.formats.getFormat(formatName);
+            if (format == null) {
+                ErrorMessage.FORMAT_INVALID.sendTo(sender, formatName);
+            } else if (Chatomizer.formats.setDefaultFormat(format)) {
+                NoticeMessage.FORMAT_DEFAULT_SET.sendTo(sender, format.getName());
+            } else {
+                ErrorMessage.FORMAT_DEFAULT_ALREADY_SET.sendTo(sender, format.getName());
+            }
+        }
+    }
+
+    /*
      * Get format info command
      */
     private void cmdInfo(CommandSender sender, Command command, String label, String[] args) {
@@ -118,11 +145,19 @@ public class CmdChatomizer implements CommandExecutor {
     private void cmdList(CommandSender sender, Command command, String label, String[] args) {
         if (!PermissionNode.STYLE_LIST.isAllowed(sender, true)) return;
 
+        boolean isPlayer = sender instanceof Player;
+
         StringBuilder list = new StringBuilder();
         for (ChatFormat format : Chatomizer.formats.getAllowedFormats(sender)) {
-            if (list.length() > 0)
-                list.append(ChatColor.DARK_GRAY).append(", ");
-            list.append(Chatomizer.players.getFormat(sender.getName()).equals(format) ? ChatColor.GREEN : ChatColor.YELLOW).append(format.getName());
+            if (!(Chatomizer.formats.hideDefault() && Chatomizer.formats.getDefaultFormat().equals(format))) {
+                if (list.length() > 0)
+                    list.append(ChatColor.DARK_GRAY).append(", ");
+                if (isPlayer) {
+                    list.append(Chatomizer.players.getFormat(sender.getName()).equals(format) ? ChatColor.GREEN : ChatColor.YELLOW).append(format.getName());
+                } else {
+                    list.append(ChatColor.YELLOW).append(format.getName());
+                }
+            }
         }
         sender.sendMessage(ChatColor.DARK_GRAY + "=====" + ChatColor.GREEN + "Chat Formats" + ChatColor.DARK_GRAY + "=====");
         sender.sendMessage(ChatColor.YELLOW + list.toString());
@@ -167,10 +202,15 @@ public class CmdChatomizer implements CommandExecutor {
             return;
         }
 
-        ChatFormat format = Chatomizer.formats.getFormat(args[startIndex]);
+        String formatName = args[startIndex];
+        ChatFormat format = Chatomizer.formats.getFormat(formatName);
         if (format == null) {
-            ErrorMessage.FORMAT_INVALID.sendTo(sender, args[startIndex]);
-            return;
+            if (StringUtils.equalsIgnoreCaseMultiple(formatName, "none", "default")) {
+                format = Chatomizer.formats.getDefaultFormat();
+            } else {
+                ErrorMessage.FORMAT_INVALID.sendTo(sender, args[startIndex]);
+                return;
+            }
         } else if (!PermissionNode.STYLES.isAllowed(sender, format.getName().toLowerCase())) {
             ErrorMessage.FORMAT_NO_PERMISSION.sendTo(sender, format.getName());
             return;

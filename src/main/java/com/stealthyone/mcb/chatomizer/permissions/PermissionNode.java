@@ -29,6 +29,7 @@ public enum PermissionNode {
     CHAT_COLOR,
 
     STYLE_CHANGE,
+    STYLE_DEFAULT,
     STYLE_INFO,
     STYLE_LIST;
 

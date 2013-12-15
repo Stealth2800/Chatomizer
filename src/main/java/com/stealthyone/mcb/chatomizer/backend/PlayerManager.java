@@ -53,6 +53,7 @@ public class PlayerManager {
     }
 
     public int reloadPlayers() {
+        playerFile.reloadConfig();
         playerFormats.clear();
         FileConfiguration config = playerFile.getConfig();
         List<String> invalid = new ArrayList<String>();
@@ -88,7 +89,8 @@ public class PlayerManager {
             return Chatomizer.formats.getDefaultFormat();
         }
         Log.debug("getFormat, id: " + id.toString());
-        return Chatomizer.formats.getFormat(playerFormats.get(playerName.toLowerCase()));
+        String name = playerFormats.get(playerName.toLowerCase());
+        return name.equalsIgnoreCase("<default>") ? Chatomizer.formats.getDefaultFormat() : Chatomizer.formats.getFormat(name);
     }
 
     public boolean setFormat(Player player, ChatFormat format) {
@@ -104,9 +106,10 @@ public class PlayerManager {
         if (getFormat(playerName).equals(format)) {
             return false;
         } else {
+            String formatName = format.equals(Chatomizer.formats.getDefaultFormat()) ? "<default>" : format.getName();
             UUID id = Stbl.playerIds.getUuid(playerName);
-            playerFile.getConfig().set(id.toString(), format.getName());
-            playerFormats.put(playerName.toLowerCase(), format.getName());
+            playerFile.getConfig().set(id.toString(), formatName);
+            playerFormats.put(playerName.toLowerCase(), formatName);
             return true;
         }
     }

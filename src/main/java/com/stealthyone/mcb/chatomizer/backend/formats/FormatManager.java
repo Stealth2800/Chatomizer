@@ -57,6 +57,7 @@ public class FormatManager {
     }
 
     public int reloadFormats() {
+        formatFile.reloadConfig();
         loadedFormats.clear();
         FileConfiguration config = formatFile.getConfig();
         for (String name : config.getKeys(false)) {
@@ -86,12 +87,29 @@ public class FormatManager {
         ChatFormat format = loadedFormats.get(name.toLowerCase());
         if (format == null) {
             format = loadFormat(name);
+            if (format == null && name.equalsIgnoreCase("default")) {
+                formatFile.getConfig().set("default", DEFAULT_FORMAT);
+                format = loadFormat(name);
+            }
         }
         return format;
     }
 
     public ChatFormat getDefaultFormat() {
-        return getFormat("default");
+        return getFormat(formatFile.getConfig().getString("Default format", "default"));
+    }
+
+    public boolean setDefaultFormat(ChatFormat format) {
+        String formatName = format.getName();
+        if (!formatName.equalsIgnoreCase(getDefaultFormat().getName())) {
+            formatFile.getConfig().set("Default format", formatName);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean hideDefault() {
+        return formatFile.getConfig().getBoolean("Hide default", true);
     }
 
     public Map<String, ChatFormat> getLoadedFormats() {

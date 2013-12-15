@@ -1,3 +1,5 @@
+Default format: format
+Hide default: true
 default:
   creator: Chatomizer
   format: '<{SENDER}> {MESSAGE}'
