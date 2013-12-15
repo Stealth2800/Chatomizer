@@ -43,7 +43,7 @@ public class ChatFormat {
     }
 
     public String getCreator(boolean raw) {
-        return config.getString("creator", raw ? null : ChatColor.RED + "<none>");
+        return config.getString("creator", raw ? null : ChatColor.DARK_RED + "<none>");
     }
 
     public String getFormat() {
@@ -51,7 +51,7 @@ public class ChatFormat {
     }
 
     public String getFormat(boolean raw) {
-        return raw ? config.getString("format") : ChatColor.translateAlternateColorCodes('&', config.getString("format"));
+        return raw ? config.getString("format", FormatManager.DEFAULT_FORMAT) : ChatColor.translateAlternateColorCodes('&', config.getString("format", FormatManager.DEFAULT_FORMAT));
     }
 
 }
