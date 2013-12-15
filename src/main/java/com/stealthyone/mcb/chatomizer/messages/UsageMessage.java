@@ -27,7 +27,7 @@ public enum UsageMessage {
     STYLE_DIRECT("{TAG}/{LABEL} <style name>"),
     STYLE_INFO("{TAG}/{LABEL} info <style name>");
 
-    private final String TAG = ChatColor.GOLD + "[Chatomizer] ";
+    private final String TAG = ChatColor.GOLD + "[Chatomizer] " + ChatColor.RED;
     private String message;
 
     private UsageMessage(String message) {
