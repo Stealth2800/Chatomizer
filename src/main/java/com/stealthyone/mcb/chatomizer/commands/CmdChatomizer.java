@@ -106,9 +106,9 @@ public class CmdChatomizer implements CommandExecutor {
             ErrorMessage.FORMAT_INVALID.sendTo(sender, args[1]);
         } else {
             sender.sendMessage(ChatColor.DARK_GRAY + "=====" + ChatColor.GREEN + "Format: " + ChatColor.GOLD + format.getName() + ChatColor.DARK_GRAY + "=====");
-            sender.sendMessage(ChatColor.RED + " Creator: " + ChatColor.YELLOW + format.getCreator());
-            sender.sendMessage(ChatColor.RED + " Format: " + ChatColor.YELLOW + format.getFormat());
-            sender.sendMessage(ChatColor.RED + " Format (raw): " + ChatColor.YELLOW + format.getFormat(true));
+            sender.sendMessage(ChatColor.RED + "Creator: " + ChatColor.YELLOW + format.getCreator());
+            sender.sendMessage(ChatColor.RED + "Format: " + ChatColor.YELLOW + format.getFormat());
+            sender.sendMessage(ChatColor.RED + "Format (raw): " + ChatColor.YELLOW + format.getFormat(true));
         }
     }
 
@@ -118,8 +118,14 @@ public class CmdChatomizer implements CommandExecutor {
     private void cmdList(CommandSender sender, Command command, String label, String[] args) {
         if (!PermissionNode.STYLE_LIST.isAllowed(sender, true)) return;
 
+        StringBuilder list = new StringBuilder();
+        for (ChatFormat format : Chatomizer.formats.getAllowedFormats(sender)) {
+            if (list.length() > 0)
+                list.append(ChatColor.DARK_GRAY).append(", ");
+            list.append(Chatomizer.players.getFormat(sender.getName()).equals(format) ? ChatColor.GREEN : ChatColor.YELLOW).append(format.getName());
+        }
         sender.sendMessage(ChatColor.DARK_GRAY + "=====" + ChatColor.GREEN + "Chat Formats" + ChatColor.DARK_GRAY + "=====");
-        sender.sendMessage(ChatColor.YELLOW + " " + Chatomizer.formats.getAllowedFormats(sender).toString().replace("[", "").replace("]", ""));
+        sender.sendMessage(ChatColor.YELLOW + list.toString());
     }
 
     /*
