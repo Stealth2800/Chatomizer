@@ -24,6 +24,8 @@ import org.bukkit.command.CommandSender;
 
 public enum NoticeMessage implements MessageReferencer {
 
+    FORMAT_DEFAULT_NOTICE,
+    FORMAT_DEFAULT_SET,
     FORMAT_NOTICE,
     FORMAT_SET,
 

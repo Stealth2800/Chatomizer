@@ -1,5 +1,6 @@
 errors:
   format_already_set: '&cFormat already set to: ''&4%s&c'''
+  format_default_already_set: '&cDefault format already set to: ''&4%s&c'''
   format_invalid: '&cInvalid chat format: ''&4%s&c'''
   format_no_permission: '&cYou do not have permission for the chat format: ''&4%s&c'''
   format_unable_to_set: '&cUnable to set format to: ''&4%s&c'''
@@ -7,6 +8,8 @@ errors:
   no_permission: '&cYou do not have permission to use this command.'
   page_must_be_int: '&cPage number must be an integer.'
 notices:
+  format_default_notice: '&3Current default: &6%s&3.'
+  format_default_set: '&aUpdated default chat format to ''&6%s&a''.'
   format_notice: '&3Current format: &6%s&3.'
   format_set: '&aUpdated current chat format to ''&6%s&a''.'
   plugin_reloaded: '&aReloaded plugin data from the disk.'

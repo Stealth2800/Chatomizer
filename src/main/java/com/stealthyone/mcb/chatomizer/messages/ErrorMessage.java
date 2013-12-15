@@ -25,6 +25,7 @@ import org.bukkit.command.CommandSender;
 public enum ErrorMessage implements MessageReferencer {
 
     FORMAT_ALREADY_SET,
+    FORMAT_DEFAULT_ALREADY_SET,
     FORMAT_INVALID,
     FORMAT_NO_PERMISSION,
     FORMAT_UNABLE_TO_SET,
