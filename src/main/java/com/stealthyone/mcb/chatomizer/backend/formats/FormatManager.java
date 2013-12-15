@@ -22,17 +22,21 @@ import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
 import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
 import com.stealthyone.mcb.stbukkitlib.lib.storage.YamlFileManager;
+import com.stealthyone.mcb.stbukkitlib.lib.utils.FileUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class FormatManager {
+
+    public final static String DEFAULT_FORMAT = "<{SENDER}> {MESSAGE}";
 
     private ChatomizerPlugin plugin;
 
@@ -42,6 +46,13 @@ public class FormatManager {
     public FormatManager(ChatomizerPlugin plugin) {
         this.plugin = plugin;
         formatFile = new YamlFileManager(plugin.getDataFolder() + File.separator + "chatFormats.yml");
+        if (formatFile.isEmpty()) {
+            try {
+                FileUtils.copyFileFromJar(plugin, "chatFormats.yml");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
         Log.info("Loaded " + reloadFormats() + " chat formats.");
     }
 
@@ -54,7 +65,7 @@ public class FormatManager {
 
         if (!loadedFormats.containsKey("default")) {
             Log.info("Default chat format not found, creating now.");
-            config.set("default.format", "<{NAME}> {MESSAGE}");
+            config.set("default.format", DEFAULT_FORMAT);
             loadFormat("default");
         }
 
