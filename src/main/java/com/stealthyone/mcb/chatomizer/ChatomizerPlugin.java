@@ -102,6 +102,7 @@ public class ChatomizerPlugin extends JavaPlugin implements Autosavable {
 
     @Override
     public void onDisable() {
+        saveAll();
         Log.info(String.format("%s v%s by Stealth2800 disabled.", getName(), getDescription().getVersion()));
     }
 
