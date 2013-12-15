@@ -19,6 +19,7 @@
 package com.stealthyone.mcb.chatomizer.listeners;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
+import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
 import com.stealthyone.mcb.chatomizer.api.Chatomizer;
 import com.stealthyone.mcb.chatomizer.backend.formats.ChatFormat;
 import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
@@ -45,6 +46,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent e) {
+        Log.debug("Player chat");
         Player sender = e.getPlayer();
         String senderName = e.getPlayer().getName();
         boolean hasColorPerm = PermissionNode.CHAT_COLOR.isAllowed(sender);
@@ -57,6 +59,14 @@ public class PlayerListener implements Listener {
                 recipient.sendMessage(ChatColor.RED + "An error occurred while receiving a chat message. Please contact an administrator to let them know about this.");
                 return;
             }
+
+            Log.debug("senderName is null: " + (senderName == null));
+            Log.debug("message is null: " + (e.getMessage() == null));
+            Log.debug("Vault is null: " + (Stbl.hooks.getVault() == null));
+            Log.debug("Permission is null: " + (Stbl.hooks.getVault().getPermission() == null));
+            Log.debug("group is null: " + (Stbl.hooks.getVault().getPermission().getPrimaryGroup(sender) == null));
+            Log.debug("prefix is null: " + (Stbl.hooks.getVault().getChat().getPlayerPrefix(sender) == null));
+            Log.debug("suffix is null: " + (Stbl.hooks.getVault().getChat().getPlayerSuffix(sender) == null));
 
             String finalMessage = format.getFormat()
                     .replace("{SENDER}", senderName)

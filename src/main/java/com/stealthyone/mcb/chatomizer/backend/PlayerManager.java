@@ -41,7 +41,7 @@ public class PlayerManager {
 
     public PlayerManager(ChatomizerPlugin plugin) {
         this.plugin = plugin;
-        playerFile = new YamlFileManager(plugin.getDataFolder() + File.separator + "playerFormats.yml");
+        playerFile = new YamlFileManager(plugin.getDataFolder() + File.separator + "data" + File.separator + "playerFormats.yml");
         Log.info("Loaded " + reloadPlayers() + " players.");
     }
 
@@ -84,8 +84,10 @@ public class PlayerManager {
 
         UUID id = Stbl.playerIds.getUuid(playerName);
         if (id == null) {
+            Log.debug("getFormat, id is null");
             return Chatomizer.formats.getDefaultFormat();
         }
+        Log.debug("getFormat, id: " + id.toString());
         return Chatomizer.formats.getFormat(playerFormats.get(playerName.toLowerCase()));
     }
 
@@ -104,6 +106,7 @@ public class PlayerManager {
         } else {
             UUID id = Stbl.playerIds.getUuid(playerName);
             playerFile.getConfig().set(id.toString(), format.getName());
+            playerFormats.put(playerName.toLowerCase(), format.getName());
             return true;
         }
     }
