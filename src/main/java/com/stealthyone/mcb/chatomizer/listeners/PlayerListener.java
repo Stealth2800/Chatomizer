@@ -19,11 +19,12 @@
 package com.stealthyone.mcb.chatomizer.listeners;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
 import com.stealthyone.mcb.chatomizer.api.Chatomizer;
 import com.stealthyone.mcb.chatomizer.backend.formats.ChatFormat;
 import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
 import com.stealthyone.mcb.stbukkitlib.api.Stbl;
+import com.stealthyone.mcb.stbukkitlib.lib.utils.ChatColorUtils;
+import net.milkbowl.vault.chat.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,10 +47,16 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent e) {
-        Log.debug("Player chat");
         Player sender = e.getPlayer();
         String senderName = e.getPlayer().getName();
+        String message = e.getMessage();
+        Chat chat = Stbl.hooks.getVault().getChat();
+        String senderGroup = Stbl.hooks.getVault().getPermission().getPrimaryGroup(sender);
+        String senderPrefix = chat.getPlayerPrefix(sender);
+        String senderSuffix = chat.getPlayerSuffix(sender);
         boolean hasColorPerm = PermissionNode.CHAT_COLOR.isAllowed(sender);
+        boolean hasFormatPerm = PermissionNode.CHAT_FORMATTING.isAllowed(sender);
+        boolean hasMagicPerm = PermissionNode.CHAT_MAGIC.isAllowed(sender);
 
         e.setCancelled(true);
 
@@ -60,22 +67,21 @@ public class PlayerListener implements Listener {
                 return;
             }
 
-            Log.debug("senderName is null: " + (senderName == null));
-            Log.debug("message is null: " + (e.getMessage() == null));
-            Log.debug("Vault is null: " + (Stbl.hooks.getVault() == null));
-            Log.debug("Permission is null: " + (Stbl.hooks.getVault().getPermission() == null));
-            Log.debug("group is null: " + (Stbl.hooks.getVault().getPermission().getPrimaryGroup(sender) == null));
-            Log.debug("prefix is null: " + (Stbl.hooks.getVault().getChat().getPlayerPrefix(sender) == null));
-            Log.debug("suffix is null: " + (Stbl.hooks.getVault().getChat().getPlayerSuffix(sender) == null));
-
-            String finalMessage = format.getFormat()
+            String finalMessage = format.getFormat(senderGroup)
                     .replace("{SENDER}", senderName)
-                    .replace("{MESSAGE}", e.getMessage())
-                    .replace("{GROUP}", Stbl.hooks.getVault().getPermission().getPrimaryGroup(sender))
-                    .replace("{PREFIX}", Stbl.hooks.getVault().getChat().getPlayerPrefix(sender))
-                    .replace("{SUFFIX}", Stbl.hooks.getVault().getChat().getPlayerSuffix(sender));
+                    .replace("{MESSAGE}", message)
+                    .replace("{GROUP}", senderGroup)
+                    .replace("{PREFIX}", senderPrefix)
+                    .replace("{SUFFIX}", senderSuffix);
 
-            recipient.sendMessage(hasColorPerm ? ChatColor.translateAlternateColorCodes('&', finalMessage) : finalMessage);
+            if (hasColorPerm)
+                finalMessage = ChatColorUtils.colorizeMessage(finalMessage);
+            if (hasFormatPerm)
+                finalMessage = ChatColorUtils.formatMessage(finalMessage);
+            if (hasMagicPerm)
+                finalMessage = ChatColorUtils.magicfyMessage(finalMessage);
+
+            recipient.sendMessage(finalMessage);
         }
     }
 

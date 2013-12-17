@@ -27,6 +27,8 @@ public enum PermissionNode {
     ADMIN_SAVE,
 
     CHAT_COLOR,
+    CHAT_FORMATTING,
+    CHAT_MAGIC,
 
     STYLE_CHANGE,
     STYLE_DEFAULT,
