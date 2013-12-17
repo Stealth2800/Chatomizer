@@ -18,15 +18,32 @@
  */
 package com.stealthyone.mcb.chatomizer.backend.formats;
 
+import com.stealthyone.mcb.chatomizer.api.Chatomizer;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChatFormat {
 
     private ConfigurationSection config;
 
+    private Map<String, String> groupFormats = new HashMap<String, String>();
+
     public ChatFormat(ConfigurationSection config) {
         this.config = config;
+        reloadGroupFormats();
+    }
+
+    public void reloadGroupFormats() {
+        groupFormats.clear();
+        ConfigurationSection formats = config.getConfigurationSection("formats");
+        if (formats == null) return;
+        for (String key : formats.getKeys(false)) {
+            if (formats.getString(key) != null)
+                groupFormats.put(key.toLowerCase(), formats.getString(key));
+        }
     }
 
     @Override
@@ -46,12 +63,19 @@ public class ChatFormat {
         return config.getString("creator", raw ? null : ChatColor.DARK_RED + "<none>");
     }
 
-    public String getFormat() {
-        return getFormat(false);
+    public String getDefaultFormat() {
+        String defaultGroup = Chatomizer.formats.getDefaultGroup();
+        String format = defaultGroup != null ? groupFormats.get(defaultGroup.toLowerCase()) : null;
+        return format != null ? format : FormatManager.DEFAULT_FORMAT;
     }
 
-    public String getFormat(boolean raw) {
-        return raw ? config.getString("format", FormatManager.DEFAULT_FORMAT) : ChatColor.translateAlternateColorCodes('&', config.getString("format", FormatManager.DEFAULT_FORMAT));
+    public String getFormat(String groupName) {
+        String format = groupFormats.get(groupName.toLowerCase());
+        return format != null ? format : getDefaultFormat();
+    }
+
+    public Map<String, String> getAllFormats() {
+        return groupFormats;
     }
 
 }
