@@ -26,6 +26,7 @@ import com.stealthyone.mcb.stbukkitlib.lib.utils.FileUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,6 +53,9 @@ public class FormatManager {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        } else {
+            formatFile.copyDefaults(YamlConfiguration.loadConfiguration(plugin.getResource("chatFormats.yml")));
+            formatFile.saveFile();
         }
         Log.info("Loaded " + reloadFormats() + " chat formats.");
     }
@@ -110,6 +114,10 @@ public class FormatManager {
 
     public boolean hideDefault() {
         return formatFile.getConfig().getBoolean("Hide default", true);
+    }
+
+    public String getDefaultGroup() {
+        return formatFile.getConfig().getString("Default group", "default");
     }
 
     public Map<String, ChatFormat> getLoadedFormats() {
