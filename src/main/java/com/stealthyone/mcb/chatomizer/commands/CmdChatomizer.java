@@ -35,6 +35,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Map.Entry;
+
 public class CmdChatomizer implements CommandExecutor {
 
     private ChatomizerPlugin plugin;
@@ -134,8 +136,10 @@ public class CmdChatomizer implements CommandExecutor {
         } else {
             sender.sendMessage(ChatColor.DARK_GRAY + "=====" + ChatColor.GREEN + "Format: " + ChatColor.GOLD + format.getName() + ChatColor.DARK_GRAY + "=====");
             sender.sendMessage(ChatColor.RED + "Creator: " + ChatColor.YELLOW + format.getCreator());
-            sender.sendMessage(ChatColor.RED + "Format: " + ChatColor.YELLOW + format.getFormat());
-            sender.sendMessage(ChatColor.RED + "Format (raw): " + ChatColor.YELLOW + format.getFormat(true));
+            sender.sendMessage(ChatColor.RED + "Default format: " + ChatColor.YELLOW + format.getDefaultFormat());
+            for (Entry<String, String> entry : format.getAllFormats().entrySet()) {
+                sender.sendMessage(ChatColor.RED + entry.getKey() + ": " + ChatColor.YELLOW + entry.getValue());
+            }
         }
     }
 
