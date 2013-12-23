@@ -1,6 +1,5 @@
-Default format: format
+Default format: default
 Default group: default
-Hide default: true
 default:
   creator: Chatomizer
   hidden: false
