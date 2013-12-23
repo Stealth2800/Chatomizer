@@ -18,6 +18,7 @@
  */
 package com.stealthyone.mcb.chatomizer.permissions;
 
+import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
 import org.apache.commons.lang.Validate;
 import org.bukkit.command.CommandSender;
 
@@ -25,13 +26,14 @@ import java.util.Arrays;
 
 public enum VariablePermissionNode {
 
-    STYLE(1);
+    STYLES(1);
 
     private int varCount;
     private String permission;
 
     private VariablePermissionNode(int varCount) {
         this.varCount = varCount;
+        permission = "chatomizer." + toString().toLowerCase().replace("_", ".");
     }
 
     public boolean isAllowed(CommandSender sender, String... variables) {
@@ -40,7 +42,8 @@ public enum VariablePermissionNode {
         if (variables.length != varCount)
             throw new IllegalArgumentException("Invalid number of variables for VariablePermissionNode: " + toString());
 
-        return sender.hasPermission(permission + "." + Arrays.toString(variables).replace("[", ".").replace("]", "").replace(",", "."));
+        Log.debug("Checking permission: " + permission + "." + Arrays.toString(variables).replace("[", ".").replace("]", "").replace(",", "."));
+        return sender.hasPermission(permission + Arrays.toString(variables).replace("[", ".").replace("]", "").replace(",", "."));
     }
 
 }

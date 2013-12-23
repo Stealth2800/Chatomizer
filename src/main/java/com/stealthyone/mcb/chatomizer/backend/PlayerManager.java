@@ -20,7 +20,6 @@ package com.stealthyone.mcb.chatomizer.backend;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
-import com.stealthyone.mcb.chatomizer.api.Chatomizer;
 import com.stealthyone.mcb.chatomizer.backend.formats.ChatFormat;
 import com.stealthyone.mcb.stbukkitlib.api.Stbl;
 import com.stealthyone.mcb.stbukkitlib.lib.storage.YamlFileManager;
@@ -29,15 +28,17 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 public class PlayerManager {
 
     private ChatomizerPlugin plugin;
 
     private YamlFileManager playerFile;
-    private Map<String, String> playerFormats = new HashMap<String, String>(); //Player, format
+    private Map<String, String> playerFormats = new HashMap<>(); //UUID, format
 
     public PlayerManager(ChatomizerPlugin plugin) {
         this.plugin = plugin;
@@ -46,8 +47,9 @@ public class PlayerManager {
     }
 
     public void saveAll() {
+        FileConfiguration playerConfig = playerFile.getConfig();
         for (Entry<String, String> entry : playerFormats.entrySet()) {
-            playerFile.getConfig().set(Stbl.playerIds.getUuid(entry.getKey()).toString(), entry.getValue());
+            playerConfig.set(entry.getKey(), entry.getValue());
         }
         playerFile.saveFile();
     }
@@ -56,27 +58,19 @@ public class PlayerManager {
         playerFile.reloadConfig();
         playerFormats.clear();
         FileConfiguration config = playerFile.getConfig();
-        List<String> invalid = new ArrayList<String>();
         for (String uuid : config.getKeys(false)) {
-            if (!loadPlayer(UUID.fromString(uuid)))
-                invalid.add(uuid);
+            loadPlayer(UUID.fromString(uuid));
         }
-        if (invalid.size() > 0)
-            Log.warning("Unable to load some UUIDs from playerFormats.yml - names not found. (" + invalid.toString().replace("[", "").replace("]", ")"));
         return playerFormats.size();
     }
 
-    public boolean loadPlayer(UUID uuid) {
-        String name = Stbl.playerIds.getName(uuid);
-        if (name != null) {
-            playerFormats.put(name.toLowerCase(), playerFile.getConfig().getString(name.toLowerCase(), "default"));
-            return true;
-        }
-        return false;
+    public void loadPlayer(UUID uuid) {
+        playerFormats.put(uuid.toString(), playerFile.getConfig().getString(uuid.toString(), "<default>"));
     }
 
     public ChatFormat getFormat(Player player) {
         Validate.notNull(player);
+
         return getFormat(player.getName());
     }
 
@@ -85,12 +79,10 @@ public class PlayerManager {
 
         UUID id = Stbl.playerIds.getUuid(playerName);
         if (id == null) {
-            Log.debug("getFormat, id is null");
-            return Chatomizer.formats.getDefaultFormat();
+            return plugin.getFormatManager().getDefaultFormat();
         }
-        Log.debug("getFormat, id: " + id.toString());
-        String name = playerFormats.get(playerName.toLowerCase());
-        return name.equalsIgnoreCase("<default>") ? Chatomizer.formats.getDefaultFormat() : Chatomizer.formats.getFormat(name);
+        String name = playerFormats.get(id.toString());
+        return name.equalsIgnoreCase("<default>") ? plugin.getFormatManager().getDefaultFormat() : plugin.getFormatManager().getFormat(name);
     }
 
     public boolean setFormat(Player player, ChatFormat format) {
@@ -106,7 +98,7 @@ public class PlayerManager {
         if (getFormat(playerName).equals(format)) {
             return false;
         } else {
-            String formatName = format.equals(Chatomizer.formats.getDefaultFormat()) ? "<default>" : format.getName();
+            String formatName = format.equals(plugin.getFormatManager().getDefaultFormat()) ? "<default>" : format.getName();
             UUID id = Stbl.playerIds.getUuid(playerName);
             playerFile.getConfig().set(id.toString(), formatName);
             playerFormats.put(playerName.toLowerCase(), formatName);

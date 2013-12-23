@@ -19,7 +19,7 @@
 package com.stealthyone.mcb.chatomizer.commands;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
-import com.stealthyone.mcb.chatomizer.api.Chatomizer;
+import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
 import com.stealthyone.mcb.chatomizer.backend.formats.ChatFormat;
 import com.stealthyone.mcb.chatomizer.messages.ErrorMessage;
 import com.stealthyone.mcb.chatomizer.messages.NoticeMessage;
@@ -91,9 +91,10 @@ public class CmdChatomizer implements CommandExecutor {
             }
         }
         if (PlayerUtils.isSenderPlayer(sender)) {
-            NoticeMessage.FORMAT_NOTICE.sendTo(sender, Chatomizer.players.getFormat((Player) sender).getName());
+            NoticeMessage.FORMAT_NOTICE.sendTo(sender, plugin.getPlayerManager().getFormat((Player) sender).getName());
         } else {
-            sender.sendMessage("-help-");
+            sender.sendMessage("polished help coming soon");
+            sender.sendMessage("commands: default, info, list, reload, save, style/format, version/about");
         }
         return true;
     }
@@ -105,13 +106,13 @@ public class CmdChatomizer implements CommandExecutor {
         if (!PermissionNode.STYLE_DEFAULT.isAllowed(sender, true)) return;
 
         if (args.length == 1) {
-            NoticeMessage.FORMAT_DEFAULT_NOTICE.sendTo(sender, Chatomizer.formats.getDefaultFormat().getName());
+            NoticeMessage.FORMAT_DEFAULT_NOTICE.sendTo(sender, plugin.getFormatManager().getDefaultFormat().getName());
         } else {
             String formatName = args[1];
-            ChatFormat format = Chatomizer.formats.getFormat(formatName);
+            ChatFormat format = plugin.getFormatManager().getFormat(formatName);
             if (format == null) {
                 ErrorMessage.FORMAT_INVALID.sendTo(sender, formatName);
-            } else if (Chatomizer.formats.setDefaultFormat(format)) {
+            } else if (plugin.getFormatManager().setDefaultFormat(format)) {
                 NoticeMessage.FORMAT_DEFAULT_SET.sendTo(sender, format.getName());
             } else {
                 ErrorMessage.FORMAT_DEFAULT_ALREADY_SET.sendTo(sender, format.getName());
@@ -130,7 +131,7 @@ public class CmdChatomizer implements CommandExecutor {
             return;
         }
 
-        ChatFormat format = Chatomizer.formats.getFormat(args[1]);
+        ChatFormat format = plugin.getFormatManager().doesFormatExist(args[1]) ? plugin.getFormatManager().getFormat(args[1]) : null;
         if (format == null) {
             ErrorMessage.FORMAT_INVALID.sendTo(sender, args[1]);
         } else {
@@ -152,19 +153,19 @@ public class CmdChatomizer implements CommandExecutor {
         boolean isPlayer = sender instanceof Player;
 
         StringBuilder list = new StringBuilder();
-        for (ChatFormat format : Chatomizer.formats.getAllowedFormats(sender)) {
-            if (!(Chatomizer.formats.hideDefault() && Chatomizer.formats.getDefaultFormat().equals(format))) {
+        for (ChatFormat format : plugin.getFormatManager().getAllowedFormats(sender)) {
+            if (!format.isHidden()) {
                 if (list.length() > 0)
                     list.append(ChatColor.DARK_GRAY).append(", ");
                 if (isPlayer) {
-                    list.append(Chatomizer.players.getFormat(sender.getName()).equals(format) ? ChatColor.GREEN : ChatColor.YELLOW).append(format.getName());
+                    list.append(plugin.getPlayerManager().getFormat(sender.getName()).equals(format) ? ChatColor.GREEN : ChatColor.YELLOW).append(format.getName());
                 } else {
                     list.append(ChatColor.YELLOW).append(format.getName());
                 }
             }
         }
         sender.sendMessage(ChatColor.DARK_GRAY + "=====" + ChatColor.GREEN + "Chat Formats" + ChatColor.DARK_GRAY + "=====");
-        sender.sendMessage(ChatColor.YELLOW + list.toString());
+        sender.sendMessage(list.length() == 0 ? "" + ChatColor.RED + ChatColor.ITALIC + "Nothing here" : ChatColor.YELLOW + list.toString());
     }
 
     /*
@@ -174,8 +175,8 @@ public class CmdChatomizer implements CommandExecutor {
         if (!PermissionNode.ADMIN_RELOAD.isAllowed(sender, true)) return;
 
         plugin.reloadConfig();
-        Chatomizer.formats.reloadFormats();
-        Chatomizer.players.reloadPlayers();
+        plugin.getFormatManager().reloadFormats();
+        plugin.getPlayerManager().reloadPlayers();
         NoticeMessage.PLUGIN_RELOADED.sendTo(sender);
     }
 
@@ -207,10 +208,11 @@ public class CmdChatomizer implements CommandExecutor {
         }
 
         String formatName = args[startIndex];
-        ChatFormat format = Chatomizer.formats.getFormat(formatName);
+        ChatFormat format = plugin.getFormatManager().doesFormatExist(formatName) ? plugin.getFormatManager().getFormat(formatName) : null;
         if (format == null) {
+            Log.debug("format is null");
             if (StringUtils.equalsIgnoreCaseMultiple(formatName, "none", "default")) {
-                format = Chatomizer.formats.getDefaultFormat();
+                format = plugin.getFormatManager().getDefaultFormat();
             } else {
                 ErrorMessage.FORMAT_INVALID.sendTo(sender, args[startIndex]);
                 return;
@@ -221,7 +223,7 @@ public class CmdChatomizer implements CommandExecutor {
         }
 
         try {
-            if (Chatomizer.players.setFormat((Player) sender, format)) {
+            if (plugin.getPlayerManager().setFormat((Player) sender, format)) {
                 NoticeMessage.FORMAT_SET.sendTo(sender, format.getName());
             } else {
                 ErrorMessage.FORMAT_ALREADY_SET.sendTo(sender, format.getName());

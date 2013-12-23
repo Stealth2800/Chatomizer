@@ -19,18 +19,24 @@
 package com.stealthyone.mcb.chatomizer.listeners;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
-import com.stealthyone.mcb.chatomizer.api.Chatomizer;
 import com.stealthyone.mcb.chatomizer.backend.formats.ChatFormat;
+import com.stealthyone.mcb.chatomizer.config.ConfigHelper;
 import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
 import com.stealthyone.mcb.stbukkitlib.api.Stbl;
 import com.stealthyone.mcb.stbukkitlib.lib.utils.ChatColorUtils;
 import net.milkbowl.vault.chat.Chat;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerListener implements Listener {
 
@@ -42,7 +48,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        Chatomizer.players.loadPlayer(e.getPlayer().getUniqueId());
+        plugin.getPlayerManager().loadPlayer(e.getPlayer().getUniqueId());
     }
 
     @EventHandler
@@ -60,29 +66,38 @@ public class PlayerListener implements Listener {
 
         e.setCancelled(true);
 
-        for (Player recipient : e.getRecipients()) {
-            ChatFormat format = Chatomizer.players.getFormat(recipient);
-            if (format == null) {
-                recipient.sendMessage(ChatColor.RED + "An error occurred while receiving a chat message. Please contact an administrator to let them know about this.");
-                return;
-            }
-
-            String finalMessage = format.getFormat(senderGroup)
-                    .replace("{SENDER}", senderName)
-                    .replace("{MESSAGE}", message)
-                    .replace("{GROUP}", senderGroup)
-                    .replace("{PREFIX}", senderPrefix)
-                    .replace("{SUFFIX}", senderSuffix);
-
-            if (hasColorPerm)
-                finalMessage = ChatColorUtils.colorizeMessage(finalMessage);
-            if (hasFormatPerm)
-                finalMessage = ChatColorUtils.formatMessage(finalMessage);
-            if (hasMagicPerm)
-                finalMessage = ChatColorUtils.magicfyMessage(finalMessage);
-
-            recipient.sendMessage(finalMessage);
+        List<CommandSender> recipients = new ArrayList<CommandSender>();
+        recipients.addAll(e.getRecipients());
+        if (ConfigHelper.LOG_CHAT.get()) {
+            recipients.add(Bukkit.getConsoleSender());
         }
+
+        for (CommandSender recipient : recipients) {
+            sendMessage(recipient, recipient instanceof ConsoleCommandSender ? plugin.getFormatManager().getFormat(ConfigHelper.CONSOLE_CHAT_FORMAT.get()) : plugin.getPlayerManager().getFormat(recipient.getName()), senderName, message, senderGroup, senderPrefix, senderSuffix, hasColorPerm, hasFormatPerm, hasMagicPerm);
+        }
+    }
+
+    private void sendMessage(CommandSender recipient, ChatFormat format, String senderName, String message, String senderGroup, String senderPrefix, String senderSuffix, boolean hasColorPerm, boolean hasFormatPerm, boolean hasMagicPerm) {
+        if (format == null) {
+            recipient.sendMessage(ChatColor.RED + "An error occurred while receiving a chat message. Please contact an administrator to let them know about this.");
+            return;
+        }
+
+        String finalMessage = format.getFormat(senderGroup)
+                .replace("{SENDER}", senderName)
+                .replace("{MESSAGE}", message)
+                .replace("{GROUP}", senderGroup)
+                .replace("{PREFIX}", senderPrefix)
+                .replace("{SUFFIX}", senderSuffix);
+
+        if (hasColorPerm)
+            finalMessage = ChatColorUtils.colorizeMessage(finalMessage);
+        if (hasFormatPerm)
+            finalMessage = ChatColorUtils.formatMessage(finalMessage);
+        if (hasMagicPerm)
+            finalMessage = ChatColorUtils.magicfyMessage(finalMessage);
+
+        recipient.sendMessage(finalMessage);
     }
 
 }

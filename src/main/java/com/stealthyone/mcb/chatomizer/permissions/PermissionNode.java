@@ -52,6 +52,6 @@ public enum PermissionNode {
         return value;
     }
 
-    public final static VariablePermissionNode STYLES = VariablePermissionNode.STYLE;
+    public final static VariablePermissionNode STYLES = VariablePermissionNode.STYLES;
 
 }

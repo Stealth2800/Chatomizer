@@ -18,7 +18,7 @@
  */
 package com.stealthyone.mcb.chatomizer.backend.formats;
 
-import com.stealthyone.mcb.chatomizer.api.Chatomizer;
+import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -48,7 +48,7 @@ public class ChatFormat {
 
     @Override
     public boolean equals(Object object) {
-        return !(object == null || !(object instanceof ChatFormat)) && ((ChatFormat) object).getName().equals(getName());
+        return !(object == null || !(object instanceof ChatFormat)) && ((ChatFormat) object).getName().equalsIgnoreCase(getName());
     }
 
     public String getName() {
@@ -63,15 +63,19 @@ public class ChatFormat {
         return config.getString("creator", raw ? null : ChatColor.DARK_RED + "<none>");
     }
 
+    public boolean isHidden() {
+        return config.getBoolean("hidden", false);
+    }
+
     public String getDefaultFormat() {
-        String defaultGroup = Chatomizer.formats.getDefaultGroup();
+        String defaultGroup = ChatomizerPlugin.getInstance().getFormatManager().getDefaultGroup();
         String format = defaultGroup != null ? groupFormats.get(defaultGroup.toLowerCase()) : null;
         return format != null ? format : FormatManager.DEFAULT_FORMAT;
     }
 
     public String getFormat(String groupName) {
         String format = groupFormats.get(groupName.toLowerCase());
-        return format != null ? format : getDefaultFormat();
+        return ChatColor.translateAlternateColorCodes('&', format != null ? format : getDefaultFormat());
     }
 
     public Map<String, String> getAllFormats() {

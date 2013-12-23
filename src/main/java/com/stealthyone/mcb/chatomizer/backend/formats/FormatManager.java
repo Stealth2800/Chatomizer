@@ -26,7 +26,6 @@ import com.stealthyone.mcb.stbukkitlib.lib.utils.FileUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,9 +52,6 @@ public class FormatManager {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-        } else {
-            formatFile.copyDefaults(YamlConfiguration.loadConfiguration(plugin.getResource("chatFormats.yml")));
-            formatFile.saveFile();
         }
         Log.info("Loaded " + reloadFormats() + " chat formats.");
     }
@@ -88,19 +84,24 @@ public class FormatManager {
     }
 
     public ChatFormat getFormat(String name) {
-        ChatFormat format = loadedFormats.get(name.toLowerCase());
+        ChatFormat format = name.equalsIgnoreCase("<default>") ? getDefaultFormat() : loadedFormats.get(name.toLowerCase());
         if (format == null) {
-            format = loadFormat(name);
-            if (format == null && name.equalsIgnoreCase("default")) {
-                formatFile.getConfig().set("default", DEFAULT_FORMAT);
-                format = loadFormat(name);
+            if (name.equalsIgnoreCase(getDefaultFormatName())) {
+                formatFile.getConfig().set(name.toLowerCase() + ".format", DEFAULT_FORMAT);
+                loadFormat(name);
+            } else {
+                format = getDefaultFormat();
             }
         }
         return format;
     }
 
+    public String getDefaultFormatName() {
+        return formatFile.getConfig().getString("Default format", "default");
+    }
+
     public ChatFormat getDefaultFormat() {
-        return getFormat(formatFile.getConfig().getString("Default format", "default"));
+        return getFormat(getDefaultFormatName());
     }
 
     public boolean setDefaultFormat(ChatFormat format) {
@@ -112,12 +113,12 @@ public class FormatManager {
         return false;
     }
 
-    public boolean hideDefault() {
-        return formatFile.getConfig().getBoolean("Hide default", true);
-    }
-
     public String getDefaultGroup() {
         return formatFile.getConfig().getString("Default group", "default");
+    }
+
+    public boolean doesFormatExist(String name) {
+        return name.equalsIgnoreCase("<default>") || loadedFormats.containsKey(name.toLowerCase());
     }
 
     public Map<String, ChatFormat> getLoadedFormats() {

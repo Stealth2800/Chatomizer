@@ -1,2 +1,4 @@
 Debug: true
 Check for updates: true
+Log chat to console: true
+Console chat format: default

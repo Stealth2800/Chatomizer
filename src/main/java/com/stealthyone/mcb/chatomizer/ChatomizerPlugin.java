@@ -18,12 +18,11 @@
  */
 package com.stealthyone.mcb.chatomizer;
 
-import com.stealthyone.mcb.chatomizer.api.Chatomizer;
-import com.stealthyone.mcb.chatomizer.backend.formats.FormatManager;
 import com.stealthyone.mcb.chatomizer.backend.PlayerManager;
+import com.stealthyone.mcb.chatomizer.backend.formats.FormatManager;
 import com.stealthyone.mcb.chatomizer.commands.CmdChatomizer;
+import com.stealthyone.mcb.chatomizer.config.ConfigHelper;
 import com.stealthyone.mcb.chatomizer.listeners.PlayerListener;
-import com.stealthyone.mcb.stbukkitlib.config.ConfigHelper;
 import com.stealthyone.mcb.stbukkitlib.lib.autosaving.Autosavable;
 import com.stealthyone.mcb.stbukkitlib.lib.messages.MessageManager;
 import com.stealthyone.mcb.stbukkitlib.lib.updating.UpdateChecker;
@@ -70,6 +69,9 @@ public class ChatomizerPlugin extends JavaPlugin implements Autosavable {
     private MessageManager messageManager;
     private UpdateChecker updateChecker;
 
+    private FormatManager formatManager;
+    private PlayerManager playerManager;
+
     @Override
     public void onLoad() {
         logger = Bukkit.getLogger();
@@ -88,8 +90,8 @@ public class ChatomizerPlugin extends JavaPlugin implements Autosavable {
         messageManager = new MessageManager(this);
         updateChecker = UpdateChecker.scheduleForMe(this, 00000);
 
-        Chatomizer.formats = new FormatManager(this);
-        Chatomizer.players = new PlayerManager(this);
+        formatManager = new FormatManager(this);
+        playerManager = new PlayerManager(this);
 
         /* Register listeners */
         Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -108,7 +110,7 @@ public class ChatomizerPlugin extends JavaPlugin implements Autosavable {
 
     @Override
     public void saveAll() {
-        Chatomizer.players.saveAll();
+        playerManager.saveAll();
     }
 
     public MessageManager getMessageManager() {
@@ -117,6 +119,14 @@ public class ChatomizerPlugin extends JavaPlugin implements Autosavable {
 
     public UpdateChecker getUpdateChecker() {
         return updateChecker;
+    }
+
+    public FormatManager getFormatManager() {
+        return formatManager;
+    }
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
     }
 
 }
