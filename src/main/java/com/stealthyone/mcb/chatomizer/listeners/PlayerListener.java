@@ -31,6 +31,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -51,8 +52,12 @@ public class PlayerListener implements Listener {
         plugin.getPlayerManager().loadPlayer(e.getPlayer().getUniqueId());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerChat(AsyncPlayerChatEvent e) {
+        if (e.isCancelled()) {
+            return;
+        }
+
         Player sender = e.getPlayer();
         String senderName = e.getPlayer().getName();
         String message = e.getMessage();
