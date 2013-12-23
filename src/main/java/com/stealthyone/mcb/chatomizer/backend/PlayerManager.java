@@ -100,8 +100,7 @@ public class PlayerManager {
         } else {
             String formatName = format.equals(plugin.getFormatManager().getDefaultFormat()) ? "<default>" : format.getName();
             UUID id = Stbl.playerIds.getUuid(playerName);
-            playerFile.getConfig().set(id.toString(), formatName);
-            playerFormats.put(playerName.toLowerCase(), formatName);
+            playerFormats.put(id.toString(), formatName);
             return true;
         }
     }
