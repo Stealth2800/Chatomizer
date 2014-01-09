@@ -88,7 +88,7 @@ public class ChatomizerPlugin extends JavaPlugin implements Autosavable {
 
         /* Setup important plugin components */
         messageManager = new MessageManager(this);
-        updateChecker = UpdateChecker.scheduleForMe(this, 00000);
+        updateChecker = UpdateChecker.scheduleForMe(this, 71196);
 
         formatManager = new FormatManager(this);
         playerManager = new PlayerManager(this);
