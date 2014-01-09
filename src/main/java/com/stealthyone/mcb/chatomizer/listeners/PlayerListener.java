@@ -60,6 +60,7 @@ public class PlayerListener implements Listener {
 
         Player sender = e.getPlayer();
         String senderName = e.getPlayer().getName();
+        String displayName = e.getPlayer().getDisplayName();
         String message = e.getMessage();
         Chat chat = Stbl.hooks.getVault().getChat();
         String senderGroup = Stbl.hooks.getVault().getPermission().getPrimaryGroup(sender);
@@ -78,11 +79,11 @@ public class PlayerListener implements Listener {
         }
 
         for (CommandSender recipient : recipients) {
-            sendMessage(recipient, recipient instanceof ConsoleCommandSender ? plugin.getFormatManager().getFormat(ConfigHelper.CONSOLE_CHAT_FORMAT.get()) : plugin.getPlayerManager().getFormat(recipient.getName()), senderName, message, senderGroup, senderPrefix, senderSuffix, hasColorPerm, hasFormatPerm, hasMagicPerm);
+            sendMessage(recipient, recipient instanceof ConsoleCommandSender ? plugin.getFormatManager().getFormat(ConfigHelper.CONSOLE_CHAT_FORMAT.get()) : plugin.getPlayerManager().getFormat(recipient.getName()), senderName, displayName, message, senderGroup, senderPrefix, senderSuffix, hasColorPerm, hasFormatPerm, hasMagicPerm);
         }
     }
 
-    private void sendMessage(CommandSender recipient, ChatFormat format, String senderName, String message, String senderGroup, String senderPrefix, String senderSuffix, boolean hasColorPerm, boolean hasFormatPerm, boolean hasMagicPerm) {
+    private void sendMessage(CommandSender recipient, ChatFormat format, String senderName, String displayName, String message, String senderGroup, String senderPrefix, String senderSuffix, boolean hasColorPerm, boolean hasFormatPerm, boolean hasMagicPerm) {
         if (format == null) {
             recipient.sendMessage(ChatColor.RED + "An error occurred while receiving a chat message. Please contact an administrator to let them know about this.");
             return;
@@ -90,6 +91,8 @@ public class PlayerListener implements Listener {
 
         String finalMessage = format.getFormat(senderGroup)
                 .replace("{SENDER}", senderName)
+                .replace("{USERNAME}", senderName)
+                .replace("{DISPLAYNAME}", displayName)
                 .replace("{MESSAGE}", message)
                 .replace("{GROUP}", senderGroup)
                 .replace("{PREFIX}", senderPrefix)
