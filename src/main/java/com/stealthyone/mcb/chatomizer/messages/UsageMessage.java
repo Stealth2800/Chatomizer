@@ -1,5 +1,5 @@
 /*
- * HelpEX - Simple yet powerful command-based help API for Bukkit
+ * Chatomizer - Advanced chat plugin with endless possibilities
  * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *

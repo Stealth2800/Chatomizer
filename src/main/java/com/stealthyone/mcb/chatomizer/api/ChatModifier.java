@@ -16,28 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.config;
+package com.stealthyone.mcb.chatomizer.api;
 
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
+import org.bukkit.entity.Player;
 
-public enum ConfigBoolean {
+public abstract class ChatModifier {
 
-    DEBUG("Debug"),
+    private String code;
+    private boolean recipientSpecific;
 
-    LOG_CHAT("Log chat to console");
-
-    private String path;
-
-    private ConfigBoolean(String path) {
-        this.path = path;
+    public ChatModifier(String code, boolean recipientSpecific) {
+        this.code = "{" + code.toUpperCase() + "}";
+        this.recipientSpecific = recipientSpecific;
     }
 
-    public boolean get() {
-        return ChatomizerPlugin.getInstance().getConfig().getBoolean(path);
+    public final String getCode() {
+        return code;
     }
 
-    public boolean get(boolean defaultValue) {
-        return ChatomizerPlugin.getInstance().getConfig().getBoolean(path, defaultValue);
+    public final boolean isRecipientSpecific() {
+        return recipientSpecific;
     }
+
+    public abstract String getReplacement(Player sender, Player recipient);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Chatomizer - Basic chat plugin that allows players to choose what chat format they wish to use
+ * Chatomizer - Advanced chat plugin with endless possibilities
  * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
@@ -18,14 +18,16 @@
  */
 package com.stealthyone.mcb.chatomizer;
 
+import com.stealthyone.mcb.chatomizer.backend.ModifierManager;
 import com.stealthyone.mcb.chatomizer.backend.PlayerManager;
 import com.stealthyone.mcb.chatomizer.backend.formats.FormatManager;
+import com.stealthyone.mcb.chatomizer.backend.hooks.HookVault;
 import com.stealthyone.mcb.chatomizer.commands.CmdChatomizer;
 import com.stealthyone.mcb.chatomizer.config.ConfigHelper;
 import com.stealthyone.mcb.chatomizer.listeners.PlayerListener;
-import com.stealthyone.mcb.stbukkitlib.lib.autosaving.Autosavable;
-import com.stealthyone.mcb.stbukkitlib.lib.messages.MessageManager;
-import com.stealthyone.mcb.stbukkitlib.lib.updating.UpdateChecker;
+import com.stealthyone.mcb.chatomizer.utils.MessageManager;
+import com.stealthyone.mcb.chatomizer.utils.TimeUtils;
+import com.stealthyone.mcb.chatomizer.utils.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -33,7 +35,7 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ChatomizerPlugin extends JavaPlugin implements Autosavable {
+public class ChatomizerPlugin extends JavaPlugin {
 
     public static class Log {
 
@@ -69,7 +71,10 @@ public class ChatomizerPlugin extends JavaPlugin implements Autosavable {
     private MessageManager messageManager;
     private UpdateChecker updateChecker;
 
+    private HookVault hookVault;
+
     private FormatManager formatManager;
+    private ModifierManager modifierManager;
     private PlayerManager playerManager;
 
     @Override
@@ -86,11 +91,15 @@ public class ChatomizerPlugin extends JavaPlugin implements Autosavable {
         getConfig().options().copyDefaults(false);
         saveConfig();
 
+        /* Setup hooks */
+        hookVault = new HookVault(this);
+
         /* Setup important plugin components */
         messageManager = new MessageManager(this);
         updateChecker = UpdateChecker.scheduleForMe(this, 71196);
 
         formatManager = new FormatManager(this);
+        modifierManager = new ModifierManager(this);
         playerManager = new PlayerManager(this);
 
         /* Register listeners */
@@ -98,6 +107,20 @@ public class ChatomizerPlugin extends JavaPlugin implements Autosavable {
 
         /* Register commands */
         getCommand("chatomizer").setExecutor(new CmdChatomizer(this));
+
+        int autosaveInterval = getConfig().getInt("Autosave interval");
+        if (autosaveInterval >= 1) {
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+                @Override
+                public void run() {
+                    saveAll();
+                }
+            }, autosaveInterval * 1200L, autosaveInterval * 1200L);
+            Log.info("Autosaving enabled. Saving every " + TimeUtils.translateSeconds(autosaveInterval * 60));
+        } else {
+            Log.warning("Autosaving DISABLED. It is recommended that you enable it to prevent data loss.");
+        }
+
 
         Log.info(String.format("%s v%s by Stealth2800 enabled.", getName(), getDescription().getVersion()));
     }
@@ -108,7 +131,6 @@ public class ChatomizerPlugin extends JavaPlugin implements Autosavable {
         Log.info(String.format("%s v%s by Stealth2800 disabled.", getName(), getDescription().getVersion()));
     }
 
-    @Override
     public void saveAll() {
         playerManager.saveAll();
     }
@@ -121,8 +143,16 @@ public class ChatomizerPlugin extends JavaPlugin implements Autosavable {
         return updateChecker;
     }
 
+    public HookVault getHookVault() {
+        return hookVault;
+    }
+
     public FormatManager getFormatManager() {
         return formatManager;
+    }
+
+    public ModifierManager getModifierManager() {
+        return modifierManager;
     }
 
     public PlayerManager getPlayerManager() {

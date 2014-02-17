@@ -1,5 +1,5 @@
 /*
- * Chatomizer - Basic chat plugin that allows players to choose what chat format they wish to use
+ * Chatomizer - Advanced chat plugin with endless possibilities
  * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
@@ -20,15 +20,14 @@ package com.stealthyone.mcb.chatomizer.commands;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
-import com.stealthyone.mcb.chatomizer.backend.formats.ChatFormat;
+import com.stealthyone.mcb.chatomizer.api.ChatFormat;
 import com.stealthyone.mcb.chatomizer.messages.ErrorMessage;
 import com.stealthyone.mcb.chatomizer.messages.NoticeMessage;
 import com.stealthyone.mcb.chatomizer.messages.UsageMessage;
 import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
-import com.stealthyone.mcb.stbukkitlib.backend.exceptions.PlayerIdNotExistsException;
-import com.stealthyone.mcb.stbukkitlib.lib.updating.UpdateChecker;
-import com.stealthyone.mcb.stbukkitlib.lib.utils.PlayerUtils;
-import com.stealthyone.mcb.stbukkitlib.lib.utils.StringUtils;
+import com.stealthyone.mcb.chatomizer.utils.PlayerUtils;
+import com.stealthyone.mcb.chatomizer.utils.StringUtils;
+import com.stealthyone.mcb.chatomizer.utils.UpdateChecker;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -222,14 +221,10 @@ public class CmdChatomizer implements CommandExecutor {
             return;
         }
 
-        try {
-            if (plugin.getPlayerManager().setFormat((Player) sender, format)) {
-                NoticeMessage.FORMAT_SET.sendTo(sender, format.getName());
-            } else {
-                ErrorMessage.FORMAT_ALREADY_SET.sendTo(sender, format.getName());
-            }
-        } catch (PlayerIdNotExistsException ex) {
-            ErrorMessage.FORMAT_UNABLE_TO_SET.sendTo(sender, format.getName());
+        if (plugin.getPlayerManager().setFormat((Player) sender, format)) {
+            NoticeMessage.FORMAT_SET.sendTo(sender, format.getName());
+        } else {
+            ErrorMessage.FORMAT_ALREADY_SET.sendTo(sender, format.getName());
         }
     }
 

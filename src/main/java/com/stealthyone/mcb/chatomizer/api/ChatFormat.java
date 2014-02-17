@@ -1,5 +1,5 @@
 /*
- * Chatomizer - Basic chat plugin that allows players to choose what chat format they wish to use
+ * Chatomizer - Advanced chat plugin with endless possibilities
  * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
@@ -16,9 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.backend.formats;
+package com.stealthyone.mcb.chatomizer.api;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
+import com.stealthyone.mcb.chatomizer.backend.formats.FormatManager;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 

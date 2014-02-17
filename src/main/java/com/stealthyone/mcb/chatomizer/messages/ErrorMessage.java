@@ -1,5 +1,5 @@
 /*
- * HelpEX - Simple yet powerful command-based help API for Bukkit
+ * Chatomizer - Advanced chat plugin with endless possibilities
  * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
@@ -19,10 +19,9 @@
 package com.stealthyone.mcb.chatomizer.messages;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
-import com.stealthyone.mcb.stbukkitlib.lib.messages.MessageReferencer;
 import org.bukkit.command.CommandSender;
 
-public enum ErrorMessage implements MessageReferencer {
+public enum ErrorMessage {
 
     FORMAT_ALREADY_SET,
     FORMAT_DEFAULT_ALREADY_SET,
@@ -40,27 +39,22 @@ public enum ErrorMessage implements MessageReferencer {
         this.path = "errors." + toString().toLowerCase();
     }
 
-    @Override
     public String getMessagePath() {
         return path;
     }
 
-    @Override
     public String getMessage() {
-        return ChatomizerPlugin.getInstance().getMessageManager().getMessage(this);
+        return ChatomizerPlugin.getInstance().getMessageManager().getMessage(path);
     }
 
-    @Override
     public String getMessage(String... replacements) {
-        return ChatomizerPlugin.getInstance().getMessageManager().getMessage(this, replacements);
+        return ChatomizerPlugin.getInstance().getMessageManager().getMessage(path, replacements);
     }
 
-    @Override
     public void sendTo(CommandSender sender) {
         sender.sendMessage(getMessage());
     }
 
-    @Override
     public void sendTo(CommandSender sender, String... replacements) {
         sender.sendMessage(getMessage(replacements));
     }

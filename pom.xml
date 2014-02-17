@@ -9,11 +9,29 @@
     <version>1.1</version>
     <name>Chatomizer</name>
 
+    <repositories>
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public</url>
+        </repository>
+
+        <repository>
+            <id>vault-repo</id>
+            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
-            <groupId>com.stealthyone.mcb</groupId>
-            <artifactId>stbukkitlib</artifactId>
-            <version>[2.0,)</version>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.7.2-R0.3-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>Vault</artifactId>
+            <version>1.2.27</version>
         </dependency>
     </dependencies>
 

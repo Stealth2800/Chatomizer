@@ -1,5 +1,5 @@
 /*
- * Chatomizer - Basic chat plugin that allows players to choose what chat format they wish to use
+ * Chatomizer - Advanced chat plugin with endless possibilities
  * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
@@ -20,9 +20,10 @@ package com.stealthyone.mcb.chatomizer.backend.formats;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
+import com.stealthyone.mcb.chatomizer.api.ChatFormat;
 import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
-import com.stealthyone.mcb.stbukkitlib.lib.storage.YamlFileManager;
-import com.stealthyone.mcb.stbukkitlib.lib.utils.FileUtils;
+import com.stealthyone.mcb.chatomizer.utils.FileUtils;
+import com.stealthyone.mcb.chatomizer.utils.YamlFileManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;

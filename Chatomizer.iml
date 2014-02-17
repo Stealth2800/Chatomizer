@@ -11,13 +11,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="StBukkitLib2" />
+    <orderEntry type="library" name="Maven: com.stealthyone.mcb:stbukkitlib:3.0" level="project" />
     <orderEntry type="library" name="Maven: org.bukkit:bukkit:1.7.2-R0.3-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: net.milkbowl.vault:Vault:1.2.16" level="project" />
-    <orderEntry type="library" name="Maven: com.sk89q:worldedit:5.5.8" level="project" />
-    <orderEntry type="library" name="Maven: com.sk89q:worldguard:5.8.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: unmanaged.bukkit:vanishnopacket:3.18.7" level="project" />
-    <orderEntry type="library" name="Maven: unmanaged.bukkit:insigns:1.5" level="project" />
+    <orderEntry type="library" name="Maven: org.bukkit:bukkit:1.7.2-R0.3-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: net.milkbowl.vault:Vault:1.2.27" level="project" />
   </component>
 </module>
 

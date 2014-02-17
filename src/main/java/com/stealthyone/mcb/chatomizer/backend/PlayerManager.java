@@ -1,5 +1,5 @@
 /*
- * Chatomizer - Basic chat plugin that allows players to choose what chat format they wish to use
+ * Chatomizer - Advanced chat plugin with endless possibilities
  * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
@@ -20,9 +20,8 @@ package com.stealthyone.mcb.chatomizer.backend;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
-import com.stealthyone.mcb.chatomizer.backend.formats.ChatFormat;
-import com.stealthyone.mcb.stbukkitlib.api.Stbl;
-import com.stealthyone.mcb.stbukkitlib.lib.storage.YamlFileManager;
+import com.stealthyone.mcb.chatomizer.api.ChatFormat;
+import com.stealthyone.mcb.chatomizer.utils.YamlFileManager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -37,11 +36,17 @@ public class PlayerManager {
 
     private ChatomizerPlugin plugin;
 
+    private YamlFileManager playerIdFile;
+    private Map<UUID, String> uuidToNames = new HashMap<>();
+    private Map<String, UUID> nameToUuids = new HashMap<>();
+
     private YamlFileManager playerFile;
     private Map<String, String> playerFormats = new HashMap<>(); //UUID, format
 
     public PlayerManager(ChatomizerPlugin plugin) {
         this.plugin = plugin;
+        playerIdFile = new YamlFileManager(plugin.getDataFolder() + File.separator + "data" + File.separator + "playerUuids.yml");
+
         playerFile = new YamlFileManager(plugin.getDataFolder() + File.separator + "data" + File.separator + "playerFormats.yml");
         Log.info("Loaded " + reloadPlayers() + " players.");
     }
@@ -52,6 +57,29 @@ public class PlayerManager {
             playerConfig.set(entry.getKey(), entry.getValue());
         }
         playerFile.saveFile();
+    }
+
+    public int reloadUuids() {
+        playerIdFile.reloadConfig();
+        uuidToNames.clear();
+        nameToUuids.clear();
+
+        FileConfiguration config = playerIdFile.getConfig();
+        for (String rawUuid : config.getKeys(false)) {
+            UUID uuid = UUID.fromString(rawUuid);
+            String name = config.getString(rawUuid);
+            uuidToNames.put(uuid, name);
+            nameToUuids.put(name.toLowerCase(), uuid);
+        }
+        return uuidToNames.size();
+    }
+
+    public String getName(UUID uuid) {
+        return uuidToNames.get(uuid);
+    }
+
+    public UUID getUuid(String name) {
+        return nameToUuids.get(name.toLowerCase());
     }
 
     public int reloadPlayers() {
@@ -77,7 +105,7 @@ public class PlayerManager {
     public ChatFormat getFormat(String playerName) {
         Validate.notNull(playerName);
 
-        UUID id = Stbl.playerIds.getUuid(playerName);
+        UUID id = getUuid(playerName);
         if (id == null) {
             return plugin.getFormatManager().getDefaultFormat();
         }
@@ -99,7 +127,7 @@ public class PlayerManager {
             return false;
         } else {
             String formatName = format.equals(plugin.getFormatManager().getDefaultFormat()) ? "<default>" : format.getName();
-            UUID id = Stbl.playerIds.getUuid(playerName);
+            UUID id = getUuid(playerName);
             playerFormats.put(id.toString(), formatName);
             return true;
         }

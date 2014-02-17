@@ -1,7 +1,7 @@
 /*
- * Chatomizer - Advanced chat plugin with endless possibilities
+ * StBukkitLib - Set of useful Bukkit-related classes
  * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
- * Website: <http://stealthyone.com/bukkit>
+ * Website: <http://google.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,28 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.config;
+package com.stealthyone.mcb.chatomizer.utils;
 
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
+public class UpdateCheckRunnable implements Runnable {
 
-public enum ConfigBoolean {
+    private UpdateChecker updateChecker;
 
-    DEBUG("Debug"),
-
-    LOG_CHAT("Log chat to console");
-
-    private String path;
-
-    private ConfigBoolean(String path) {
-        this.path = path;
+    public UpdateCheckRunnable(UpdateChecker updateChecker) {
+        this.updateChecker = updateChecker;
     }
 
-    public boolean get() {
-        return ChatomizerPlugin.getInstance().getConfig().getBoolean(path);
-    }
-
-    public boolean get(boolean defaultValue) {
-        return ChatomizerPlugin.getInstance().getConfig().getBoolean(path, defaultValue);
+    @Override
+    public void run() {
+        updateChecker.checkForUpdates(true);
     }
 
 }

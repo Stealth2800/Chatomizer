@@ -16,28 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.config;
+package com.stealthyone.mcb.chatomizer.backend.modifiers;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
+import com.stealthyone.mcb.chatomizer.api.ChatModifier;
+import net.milkbowl.vault.permission.Permission;
+import org.bukkit.entity.Player;
 
-public enum ConfigBoolean {
+public class ModifierVaultGroup extends ChatModifier {
 
-    DEBUG("Debug"),
-
-    LOG_CHAT("Log chat to console");
-
-    private String path;
-
-    private ConfigBoolean(String path) {
-        this.path = path;
+    public ModifierVaultGroup() {
+        super("GROUP", false);
     }
 
-    public boolean get() {
-        return ChatomizerPlugin.getInstance().getConfig().getBoolean(path);
-    }
-
-    public boolean get(boolean defaultValue) {
-        return ChatomizerPlugin.getInstance().getConfig().getBoolean(path, defaultValue);
+    @Override
+    public String getReplacement(Player sender, Player recipient) {
+        Permission permission = ChatomizerPlugin.getInstance().getHookVault().getPermission();
+        return (permission == null) ? "" : permission.getPrimaryGroup(sender);
     }
 
 }
