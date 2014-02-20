@@ -74,6 +74,13 @@ public class PlayerManager {
         return uuidToNames.size();
     }
 
+    public void updateUuid(Player player) {
+        UUID uuid = player.getUniqueId();
+        String name = player.getName();
+        uuidToNames.put(uuid, name);
+        nameToUuids.put(name, uuid);
+    }
+
     public String getName(UUID uuid) {
         return uuidToNames.get(uuid);
     }

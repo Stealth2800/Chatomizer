@@ -44,6 +44,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+        plugin.getPlayerManager().updateUuid(e.getPlayer());
         plugin.getPlayerManager().loadPlayer(e.getPlayer().getUniqueId());
     }
 
