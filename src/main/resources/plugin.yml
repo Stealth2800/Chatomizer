@@ -1,6 +1,6 @@
 name: ${project.name}
 version: ${project.version}
-description: Basic chat plugin that allows players to customize their chat format
+description: Powerful chat API for Bukkit
 depend: []
 softdepend: [Vault]
 author: Stealth2800
