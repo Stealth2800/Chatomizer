@@ -18,7 +18,9 @@
  */
 package com.stealthyone.mcb.chatomizer.utils;
 
+import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -57,11 +59,14 @@ public class MessageManager {
 
         FileConfiguration config = messageFile.getConfig();
         for (String key : config.getKeys(false)) {
-            if (key.equals("tag") || !(config.get(key) instanceof List)) continue;
+            Log.debug("key: " + key);
+            if (key.equals("tag") || !(config.get(key) instanceof ConfigurationSection)) continue;
 
             Map<String, String> secMessages = new HashMap<>();
-            for (String messageName : config.getConfigurationSection(key).getKeys(false)) {
-                secMessages.put(messageName, config.getString(messageName));
+            ConfigurationSection subSection = config.getConfigurationSection(key);
+            for (String messageName : subSection.getKeys(false)) {
+                Log.debug("key: " + key + " - messageName: " + messageName);
+                secMessages.put(messageName, subSection.getString(messageName));
             }
             messages.put(key, secMessages);
         }
@@ -77,7 +82,7 @@ public class MessageManager {
     }
 
     public String getMessage(String name) {
-        String[] nameSplit = name.split(".");
+        String[] nameSplit = name.split("\\.");
         String message;
         try {
             message = messages.get(nameSplit[0]).get(nameSplit[1]);
@@ -88,7 +93,7 @@ public class MessageManager {
     }
 
     public String getMessage(String name, String... replacements) {
-        String[] nameSplit = name.split(".");
+        String[] nameSplit = name.split("\\.");
         String message;
         try {
             message = messages.get(nameSplit[0]).get(nameSplit[1]);
