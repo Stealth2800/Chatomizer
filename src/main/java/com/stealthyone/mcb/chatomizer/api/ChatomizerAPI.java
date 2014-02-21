@@ -31,6 +31,7 @@ import org.bukkit.Bukkit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public final class ChatomizerAPI {
 
@@ -90,6 +91,14 @@ public final class ChatomizerAPI {
 
     public static ChatFormat getChatFormat(String name) {
         return ChatomizerPlugin.getInstance().getFormatManager().getFormat(name);
+    }
+
+    public static UUID getPlayerUuid(String name) {
+        return ChatomizerPlugin.getInstance().getPlayerManager().getUuid(name);
+    }
+
+    public static String getPlayerName(UUID uuid) {
+        return ChatomizerPlugin.getInstance().getPlayerManager().getName(uuid);
     }
 
 }
