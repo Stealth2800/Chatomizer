@@ -19,11 +19,11 @@
 package com.stealthyone.mcb.chatomizer.listeners;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
+import com.stealthyone.mcb.chatomizer.api.ChatFormat;
 import com.stealthyone.mcb.chatomizer.api.ChatModifier;
 import com.stealthyone.mcb.chatomizer.api.ChatomizerAPI;
+import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
 import com.stealthyone.mcb.chatomizer.api.events.AsyncPlayerMultiChatEvent;
-import com.stealthyone.mcb.chatomizer.api.ChatFormat;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -61,7 +61,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerMultiChat(AsyncPlayerMultiChatEvent e) {
-        Player sender = e.getPlayer();
+        Chatter sender = e.getSender();
 
         Map<String, String> genericModifications = new HashMap<>();
         Map<String, ChatModifier> specificModifications = new HashMap<>();
@@ -73,13 +73,13 @@ public class PlayerListener implements Listener {
             }
         }
 
-        String senderGroup = plugin.getHookVault().getPermission().getPrimaryGroup(sender);
+        String senderGroup = plugin.getHookVault().getPermission().getPrimaryGroup(sender.getWorldName(), sender.getName());
 
-        for (Entry<Player, ChatFormat> eRecipient : e.getRecipients().entrySet()) {
-            Player ePlayer = eRecipient.getKey();
-            String eMessage = e.getPlayerMessage(ePlayer);
+        for (Entry<Chatter, ChatFormat> curRecipient : e.getRecipients().entrySet()) {
+            Chatter recipient = curRecipient.getKey();
+            String eMessage = e.getChatterMessage(recipient);
             if (eMessage != null && !eMessage.equals("")) {
-                ChatFormat format = eRecipient.getValue();
+                ChatFormat format = curRecipient.getValue();
                 String finalMessage = format.getFormat(senderGroup).replace("{MESSAGE}", eMessage);
 
                 // Replace generic modifiers.
@@ -92,12 +92,12 @@ public class PlayerListener implements Listener {
                 // Replace specific modifiers.
                 for (Entry<String, ChatModifier> specificMod : specificModifications.entrySet()) {
                     if (finalMessage.contains(specificMod.getKey())) {
-                        finalMessage = finalMessage.replace(specificMod.getKey(), specificMod.getValue().getReplacement(sender, ePlayer));
+                        finalMessage = finalMessage.replace(specificMod.getKey(), specificMod.getValue().getReplacement(sender, recipient));
                     }
                 }
 
                 // Send message.
-                ePlayer.sendMessage(finalMessage);
+                recipient.sendMessage(finalMessage);
             }
         }
     }

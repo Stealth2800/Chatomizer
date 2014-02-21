@@ -16,20 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.backend.modifiers;
+package com.stealthyone.mcb.chatomizer.backend.modifiers.defaults;
 
 import com.stealthyone.mcb.chatomizer.api.ChatModifier;
-import org.bukkit.entity.Player;
+import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
 
-public class ModifierSenderName extends ChatModifier {
+public class ModifierSenderWorld extends ChatModifier {
 
-    public ModifierSenderName() {
-        super("USERNAME", false);
+    public ModifierSenderWorld() {
+        super("SWORLD", false);
     }
 
     @Override
-    public String getReplacement(Player sender, Player recipient) {
-        return sender.getName();
+    public String getReplacement(Chatter sender, Chatter recipient) {
+        String worldName = sender.getWorldName();
+        return worldName == null ? "" : worldName;
     }
 
 }

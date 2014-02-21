@@ -16,19 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.backend.modifiers;
+package com.stealthyone.mcb.chatomizer.backend.modifiers.defaults;
 
 import com.stealthyone.mcb.chatomizer.api.ChatModifier;
-import org.bukkit.entity.Player;
+import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
 
-public class ModifierSenderDispName extends ChatModifier {
+public class ModifierSenderDisplayName extends ChatModifier {
 
-    public ModifierSenderDispName() {
-        super("DISPLAYNAME", false);
+    public ModifierSenderDisplayName() {
+        super("SDISPNAME", false);
     }
 
     @Override
-    public String getReplacement(Player sender, Player recipient) {
+    public String getReplacement(Chatter sender, Chatter recipient) {
         return sender.getDisplayName();
     }
 

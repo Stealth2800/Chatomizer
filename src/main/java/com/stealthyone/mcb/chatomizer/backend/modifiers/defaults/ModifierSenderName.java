@@ -16,23 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.backend.modifiers;
+package com.stealthyone.mcb.chatomizer.backend.modifiers.defaults;
 
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.api.ChatModifier;
-import net.milkbowl.vault.chat.Chat;
-import org.bukkit.entity.Player;
+import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
 
-public class ModifierVaultSuffix extends ChatModifier {
+public class ModifierSenderName extends ChatModifier {
 
-    public ModifierVaultSuffix() {
-        super("SUFFIX", false);
+    public ModifierSenderName() {
+        super("SNAME", false);
     }
 
     @Override
-    public String getReplacement(Player sender, Player recipient) {
-        Chat chat = ChatomizerPlugin.getInstance().getHookVault().getChat();
-        return (chat == null) ? "" : chat.getPlayerSuffix(sender);
+    public String getReplacement(Chatter sender, Chatter recipient) {
+        return sender.getName();
     }
 
 }

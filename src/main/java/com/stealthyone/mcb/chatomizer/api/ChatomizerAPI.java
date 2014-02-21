@@ -19,6 +19,8 @@
 package com.stealthyone.mcb.chatomizer.api;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
+import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.api.chatters.ChatterPlayer;
 import com.stealthyone.mcb.chatomizer.api.events.AsyncPlayerMultiChatEvent;
 import com.stealthyone.mcb.chatomizer.backend.PlayerManager;
 import com.stealthyone.mcb.chatomizer.backend.formats.FormatManager;
@@ -64,12 +66,17 @@ public final class ChatomizerAPI {
         FormatManager formatManager = plugin.getFormatManager();
         PlayerManager playerManager = plugin.getPlayerManager();
 
-        Map<Player, ChatFormat> recipientFormats = new HashMap<>();
+        Chatter senderChatter = new ChatterPlayer(sender);
+
+        Map<Chatter, ChatFormat> recipientFormats = new HashMap<>();
+        recipientFormats.put(senderChatter, senderChatter.getChatFormat());
+
         boolean sendToConsole = ConfigHelper.LOG_CHAT.get();
         ChatFormat consoleFormat = formatManager.getFormat(ConfigHelper.CONSOLE_CHAT_FORMAT.get());
 
         for (Player recipient : recipients) {
-            recipientFormats.put(recipient, playerManager.getFormat(recipient));
+            Chatter recipientChatter = new ChatterPlayer(recipient);
+            recipientFormats.put(recipientChatter, recipientChatter.getChatFormat());
         }
 
         if (PermissionNode.CHAT_COLOR.isAllowed(sender))
@@ -79,7 +86,7 @@ public final class ChatomizerAPI {
         if (PermissionNode.CHAT_MAGIC.isAllowed(sender))
             message = ChatColorUtils.magicfyMessage(message);
 
-        AsyncPlayerMultiChatEvent multiChatEvent = new AsyncPlayerMultiChatEvent(sender, message, recipientFormats, sendToConsole, consoleFormat);
+        AsyncPlayerMultiChatEvent multiChatEvent = new AsyncPlayerMultiChatEvent(senderChatter, message, recipientFormats, sendToConsole, consoleFormat);
 
         Bukkit.getPluginManager().callEvent(multiChatEvent);
 

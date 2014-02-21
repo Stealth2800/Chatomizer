@@ -20,34 +20,36 @@ package com.stealthyone.mcb.chatomizer.api.events;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.api.ChatFormat;
+import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.api.chatters.ChatterConsole;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class AsyncPlayerMultiChatEvent extends PlayerEvent implements Cancellable {
+public class AsyncPlayerMultiChatEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
     private boolean isCancelled = false;
 
-    private boolean sendToConsole;
-    private ChatFormat consoleFormat;
-    private Map<Player, ChatFormat> recipients;
+    private Chatter sender;
+    private Map<Chatter, ChatFormat> recipients;
 
     private String message = "";
-    private String consoleMessage = "";
-    private Map<Player, String> recipientMessages = new HashMap<>();
+    private Map<Chatter, String> recipientMessages = new HashMap<>();
 
-    public AsyncPlayerMultiChatEvent(Player sender, String message, Map<Player, ChatFormat> recipients, boolean sendToConsole, ChatFormat consoleFormat) {
-        super(sender);
+    public AsyncPlayerMultiChatEvent(Chatter sender, String message, Map<Chatter, ChatFormat> recipients, boolean sendToConsole, ChatFormat consoleFormat) {
+        this.sender = sender;
         this.message = message;
         this.recipients = recipients;
-        this.sendToConsole = sendToConsole;
-        this.consoleFormat = consoleFormat;
+        recipients.put(sender, sender.getChatFormat());
+        if (sendToConsole) {
+            recipients.put(new ChatterConsole(), consoleFormat != null ? consoleFormat : ChatomizerPlugin.getInstance().getFormatManager().getDefaultFormat());
+        }
     }
 
     @Override
@@ -69,6 +71,10 @@ public class AsyncPlayerMultiChatEvent extends PlayerEvent implements Cancellabl
         return handlers;
     }
 
+    public Chatter getSender() {
+        return sender;
+    }
+
     public String getBaseMessage() {
         return message;
     }
@@ -77,73 +83,49 @@ public class AsyncPlayerMultiChatEvent extends PlayerEvent implements Cancellabl
         this.message = message;
     }
 
-    public String getConsoleMessage() {
-        return consoleMessage.equals("") ? message : consoleMessage;
-    }
-
-    public void setConsoleMessage(String message) {
-        consoleMessage = message;
-    }
-
-    public String getPlayerMessage(Player player) {
-        String message = recipientMessages.get(player);
+    public String getChatterMessage(Chatter chatter) {
+        String message = recipientMessages.get(chatter);
         return message == null ? this.message : message;
     }
 
-    public void setPlayerMessage(Player player, String message) {
+    public void setChatterMessage(Chatter chatter, String message) {
         if (message == null || message.equals("")) {
-            recipientMessages.remove(player);
+            recipientMessages.remove(chatter);
         } else {
-            recipientMessages.put(player, message);
+            recipientMessages.put(chatter, message);
         }
     }
 
-    public Map<Player, ChatFormat> getRecipients() {
+    public Map<Chatter, ChatFormat> getRecipients() {
         return recipients;
     }
 
-    public ChatFormat getFormat(Player player) {
-        return recipients.get(player);
+    public ChatFormat getFormat(Chatter chatter) {
+        return recipients.get(chatter);
     }
 
-    public void setFormat(Player player, ChatFormat newFormat) {
+    public void setFormat(Chatter chatter, ChatFormat newFormat) {
         if (newFormat == null) {
-            recipients.remove(player);
+            recipients.remove(chatter);
         } else {
-            recipients.put(player, newFormat);
+            recipients.put(chatter, newFormat);
         }
     }
 
-    public void setRecipients(Set<Player> players) {
+    public void setRecipients(Set<Chatter> chatters) {
         recipients.clear();
-        for (Player player : players) {
-            addRecipient(player);
+        for (Chatter chatter : chatters) {
+            addRecipient(chatter);
         }
     }
 
-    public void addRecipient(Player player) {
-        recipients.put(player, ChatomizerPlugin.getInstance().getPlayerManager().getFormat(player));
+    public void addRecipient(Chatter chatter) {
+        recipients.put(chatter, chatter.getChatFormat());
     }
 
     public void removeRecipient(Player player) {
         recipients.remove(player);
         recipientMessages.remove(player);
-    }
-
-    public boolean sendToConsole() {
-        return sendToConsole;
-    }
-
-    public void setSendToConsole(boolean sendToConsole) {
-        this.sendToConsole = sendToConsole;
-    }
-
-    public ChatFormat getConsoleFormat() {
-        return consoleFormat;
-    }
-
-    public void setConsoleFormat(ChatFormat consoleFormat) {
-        this.consoleFormat = consoleFormat;
     }
 
 }

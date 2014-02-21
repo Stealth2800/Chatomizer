@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.backend;
+package com.stealthyone.mcb.chatomizer.backend.modifiers;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
 import com.stealthyone.mcb.chatomizer.api.ChatModifier;
-import com.stealthyone.mcb.chatomizer.backend.modifiers.*;
+import com.stealthyone.mcb.chatomizer.backend.modifiers.defaults.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,12 +36,19 @@ public class ModifierManager {
         this.plugin = plugin;
 
         /* Register built in modifiers. */
+        registerModifier(new ModifierRecipientName());
+        registerModifier(new ModifierRecipientDisplayName());
+        registerModifier(new ModifierRecipientWorld());
+        registerModifier(new ModifierRecipientVaultGroup());
+        registerModifier(new ModifierRecipientVaultPrefix());
+        registerModifier(new ModifierRecipientVaultSuffix());
+
         registerModifier(new ModifierSenderName());
-        registerModifier(new ModifierSenderDispName());
+        registerModifier(new ModifierSenderDisplayName());
         registerModifier(new ModifierSenderWorld());
-        registerModifier(new ModifierVaultGroup());
-        registerModifier(new ModifierVaultPrefix());
-        registerModifier(new ModifierVaultSuffix());
+        registerModifier(new ModifierSenderVaultGroup());
+        registerModifier(new ModifierSenderVaultPrefix());
+        registerModifier(new ModifierSenderVaultSuffix());
     }
 
     public boolean registerModifier(ChatModifier modifier) {

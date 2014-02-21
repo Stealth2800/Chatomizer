@@ -18,7 +18,7 @@
  */
 package com.stealthyone.mcb.chatomizer.api;
 
-import org.bukkit.entity.Player;
+import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
 
 public abstract class ChatModifier {
 
@@ -38,6 +38,6 @@ public abstract class ChatModifier {
         return recipientSpecific;
     }
 
-    public abstract String getReplacement(Player sender, Player recipient);
+    public abstract String getReplacement(Chatter sender, Chatter recipient);
 
 }

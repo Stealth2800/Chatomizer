@@ -18,7 +18,7 @@
  */
 package com.stealthyone.mcb.chatomizer;
 
-import com.stealthyone.mcb.chatomizer.backend.ModifierManager;
+import com.stealthyone.mcb.chatomizer.backend.modifiers.ModifierManager;
 import com.stealthyone.mcb.chatomizer.backend.PlayerManager;
 import com.stealthyone.mcb.chatomizer.backend.formats.FormatManager;
 import com.stealthyone.mcb.chatomizer.backend.hooks.HookVault;
