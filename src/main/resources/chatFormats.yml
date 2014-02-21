@@ -4,11 +4,11 @@ default:
   creator: Chatomizer
   hidden: false
   formats:
-    default: '<{SENDER}> {MESSAGE}'
-    administrator: '&4<&f{SENDER}&4> &c{MESSAGE}'
+    default: '<{SNAME}> {MESSAGE}'
+    administrator: '&4<&f{SNAME}&4> &c{MESSAGE}'
 example:
   creator: Chatomizer
   hidden: false
   formats:
-    default: '{SENDER}: {MESSAGE}'
-    moderator: '&l{SENDER}: {MESSAGE}'
+    default: '{SNAME}: {MESSAGE}'
+    moderator: '&l{SNAME}: {MESSAGE}'
