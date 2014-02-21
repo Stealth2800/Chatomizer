@@ -23,7 +23,9 @@ import com.stealthyone.mcb.chatomizer.api.ChatFormat;
 import com.stealthyone.mcb.chatomizer.api.ChatModifier;
 import com.stealthyone.mcb.chatomizer.api.ChatomizerAPI;
 import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.api.chatters.ChatterPlayer;
 import com.stealthyone.mcb.chatomizer.api.events.AsyncPlayerMultiChatEvent;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -31,8 +33,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class PlayerListener implements Listener {
 
@@ -56,10 +60,14 @@ public class PlayerListener implements Listener {
             e.setCancelled(true);
         }
 
-        ChatomizerAPI.createChatEvent(e.getPlayer(), e.getMessage(), e.getRecipients());
+        Set<Chatter> recipients = new HashSet<>();
+        for (Player recipient : e.getRecipients()) {
+            recipients.add(new ChatterPlayer(recipient));
+        }
+        ChatomizerAPI.createChatEvent(new ChatterPlayer(e.getPlayer()), e.getMessage(), recipients);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerMultiChat(AsyncPlayerMultiChatEvent e) {
         Chatter sender = e.getSender();
 
