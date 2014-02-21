@@ -52,6 +52,10 @@ public enum PermissionNode {
         return value;
     }
 
+    public String getPermission() {
+        return permission;
+    }
+
     public final static VariablePermissionNode STYLES = VariablePermissionNode.STYLES;
 
 }
