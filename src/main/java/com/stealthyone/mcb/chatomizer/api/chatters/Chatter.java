@@ -10,7 +10,7 @@ public abstract class Chatter {
     private String displayName;
     private String worldName;
 
-    protected Chatter(String name, String displayName, World world) {
+    public Chatter(String name, String displayName, World world) {
         Validate.notNull(name, "Name cannot be null.");
 
         this.name = name;
