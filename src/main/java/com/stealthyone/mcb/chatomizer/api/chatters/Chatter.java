@@ -45,4 +45,6 @@ public abstract class Chatter {
 
     public abstract void sendMessage(String message);
 
+    public abstract boolean hasPermission(String permission);
+
 }

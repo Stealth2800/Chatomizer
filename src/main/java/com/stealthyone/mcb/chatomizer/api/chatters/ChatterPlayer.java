@@ -23,4 +23,9 @@ public class ChatterPlayer extends Chatter {
         player.sendMessage(message);
     }
 
+    @Override
+    public boolean hasPermission(String permission) {
+        return player.hasPermission(permission);
+    }
+
 }

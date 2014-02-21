@@ -21,4 +21,9 @@ public class ChatterConsole extends Chatter {
         Bukkit.getConsoleSender().sendMessage(message);
     }
 
+    @Override
+    public boolean hasPermission(String permission) {
+        return Bukkit.getConsoleSender().hasPermission(permission);
+    }
+
 }
