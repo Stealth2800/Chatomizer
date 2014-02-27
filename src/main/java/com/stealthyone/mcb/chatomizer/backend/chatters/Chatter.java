@@ -1,4 +1,4 @@
-package com.stealthyone.mcb.chatomizer.api.chatters;
+package com.stealthyone.mcb.chatomizer.backend.chatters;
 
 import com.stealthyone.mcb.chatomizer.api.ChatFormat;
 import org.apache.commons.lang.Validate;
