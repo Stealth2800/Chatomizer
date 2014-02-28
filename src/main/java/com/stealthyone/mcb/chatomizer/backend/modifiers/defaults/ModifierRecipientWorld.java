@@ -1,7 +1,7 @@
 package com.stealthyone.mcb.chatomizer.backend.modifiers.defaults;
 
 import com.stealthyone.mcb.chatomizer.api.ChatModifier;
-import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
 
 public class ModifierRecipientWorld extends ChatModifier {
 
