@@ -13,9 +13,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: com.stealthyone.mcb:stbukkitlib:3.0" level="project" />
     <orderEntry type="library" name="Maven: org.bukkit:bukkit:1.7.2-R0.3-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.bukkit:bukkit:1.7.2-R0.3-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: net.milkbowl.vault:Vault:1.2.27" level="project" />
-    <orderEntry type="library" name="Maven: org.bukkit:craftbukkit:1.7.2-R0.3-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: net.milkbowl.vault:Vault:1.2.32" level="project" />
   </component>
 </module>
 
