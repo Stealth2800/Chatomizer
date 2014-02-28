@@ -20,6 +20,7 @@
             <name>repo.stealthyone.com Releases</name>
             <url>http://repo.stealthyone.com/content/repositories/releases/</url>
         </repository>
+
         <snapshotRepository>
             <id>snapshots</id>
             <name>repo.stealthyone.com Snapshots</name>
@@ -53,13 +54,6 @@
         </dependency>
     </dependencies>
 
-    <scm>
-        <connection>scm:svn:http://127.0.0.1/dummy</connection>
-        <developerConnection>scm:svn:https://127.0.0.1/dummy</developerConnection>
-        <tag>HEAD</tag>
-        <url>http://127.0.0.1/dummy</url>
-    </scm>
-
     <build>
         <resources>
             <resource>
@@ -74,7 +68,7 @@
             </resource>
         </resources>
         <defaultGoal>clean install</defaultGoal>
-        <finalName>${project.name} v${project.version}-b${buildNumber}</finalName>
+        <finalName>${project.name} v${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -85,6 +79,7 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -94,30 +89,22 @@
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
-                        <manifestEntries>
-                            <Implementation-Build>${buildNumber}</Implementation-Build>
-                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
+
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.2</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8</version>
                 <executions>
                     <execution>
-                        <phase>validate</phase>
+                        <id>attach-javadocs</id>
                         <goals>
-                            <goal>create</goal>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <format>{0,date,yyyyMMdd-HHmmss}</format>
-                    <items>
-                        <item>timestamp</item>
-                    </items>
-                </configuration>
             </plugin>
         </plugins>
     </build>
