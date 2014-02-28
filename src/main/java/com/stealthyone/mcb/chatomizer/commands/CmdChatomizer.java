@@ -52,6 +52,10 @@ public class CmdChatomizer implements CommandExecutor {
                 return true;
             } else {
                 switch (args[0].toLowerCase()) {
+                    case "chat":
+                        cmdChat(sender, command, label, args);
+                        return true;
+
                     /* Default format info */
                     case "default":
                         cmdDefault(sender, command, label, args);
@@ -96,6 +100,15 @@ public class CmdChatomizer implements CommandExecutor {
             sender.sendMessage("commands: default, info, list, reload, save, style/format, version/about");
         }
         return true;
+    }
+
+    /*
+     * Send chat message (mainly for console usage)
+     */
+    private void cmdChat(CommandSender sender, Command command, String label, String[] args) {
+        if (!PermissionNode.CHAT.isAllowed(sender, true)) return;
+
+        plugin.getChatterManager().
     }
 
     /*

@@ -20,12 +20,15 @@ package com.stealthyone.mcb.chatomizer.permissions;
 
 import com.stealthyone.mcb.chatomizer.messages.ErrorMessage;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 public enum PermissionNode {
 
     ADMIN_RELOAD,
     ADMIN_SAVE,
 
+    CHAT(PermissionDefault.TRUE),
     CHAT_COLOR,
     CHAT_FORMATTING,
     CHAT_MAGIC,
@@ -35,10 +38,14 @@ public enum PermissionNode {
     STYLE_INFO,
     STYLE_LIST;
 
-    private String permission;
+    private Permission permission;
 
     private PermissionNode() {
-        permission = "chatomizer." + toString().toLowerCase().replace("_", ".");
+        this(Permission.DEFAULT_PERMISSION);
+    }
+
+    private PermissionNode(PermissionDefault defaultState) {
+        permission = new Permission("chatomizer." + toString().toLowerCase().replace("_", "."), defaultState);
     }
 
     public boolean isAllowed(CommandSender sender) {
@@ -52,7 +59,7 @@ public enum PermissionNode {
         return value;
     }
 
-    public String getPermission() {
+    public Permission getPermission() {
         return permission;
     }
 

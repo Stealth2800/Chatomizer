@@ -1,21 +1,22 @@
 package com.stealthyone.mcb.chatomizer.backend.chatters;
 
 import com.stealthyone.mcb.chatomizer.api.ChatFormat;
+import com.stealthyone.mcb.chatomizer.utils.YamlFileManager;
 import org.apache.commons.lang.Validate;
-import org.bukkit.World;
 
 public abstract class Chatter {
 
+    private YamlFileManager file;
+
     private String name;
     private String displayName;
-    private String worldName;
 
-    public Chatter(String name, String displayName, World world) {
+    public Chatter(YamlFileManager file, String name, String displayName) {
         Validate.notNull(name, "Name cannot be null.");
 
+        this.file = file;
         this.name = name;
         this.displayName = (displayName == null) ? name : displayName;
-        this.worldName = (world == null) ? null : world.getName();
     }
 
     @Override
@@ -29,6 +30,10 @@ public abstract class Chatter {
         }
     }
 
+    public YamlFileManager getFile() {
+        return file;
+    }
+
     public String getName() {
         return name;
     }
@@ -37,9 +42,7 @@ public abstract class Chatter {
         return displayName;
     }
 
-    public String getWorldName() {
-        return worldName;
-    }
+    public abstract String getWorldName();
 
     public abstract ChatFormat getChatFormat();
 

@@ -3,12 +3,18 @@ package com.stealthyone.mcb.chatomizer.backend.chatters;
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.api.ChatFormat;
 import com.stealthyone.mcb.chatomizer.config.ConfigHelper;
+import com.stealthyone.mcb.chatomizer.utils.YamlFileManager;
 import org.bukkit.Bukkit;
 
 public class ChatterConsole extends Chatter {
 
-    public ChatterConsole() {
-        super("CONSOLE", null, null);
+    public ChatterConsole(YamlFileManager file) {
+        super(file, "CONSOLE", null);
+    }
+
+    @Override
+    public String getWorldName() {
+        return null;
     }
 
     @Override

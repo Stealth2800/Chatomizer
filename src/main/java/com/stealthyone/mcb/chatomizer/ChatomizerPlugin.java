@@ -18,8 +18,9 @@
  */
 package com.stealthyone.mcb.chatomizer;
 
+import com.stealthyone.mcb.chatomizer.backend.chatters.ChatterManager;
 import com.stealthyone.mcb.chatomizer.backend.modifiers.ModifierManager;
-import com.stealthyone.mcb.chatomizer.backend.PlayerManager;
+import com.stealthyone.mcb.chatomizer.backend.players.PlayerManager;
 import com.stealthyone.mcb.chatomizer.backend.formats.FormatManager;
 import com.stealthyone.mcb.chatomizer.backend.hooks.HookVault;
 import com.stealthyone.mcb.chatomizer.commands.CmdChatomizer;
@@ -73,6 +74,7 @@ public class ChatomizerPlugin extends JavaPlugin {
 
     private HookVault hookVault;
 
+    private ChatterManager chatterManager;
     private FormatManager formatManager;
     private ModifierManager modifierManager;
     private PlayerManager playerManager;
@@ -98,6 +100,7 @@ public class ChatomizerPlugin extends JavaPlugin {
         messageManager = new MessageManager(this);
         updateChecker = UpdateChecker.scheduleForMe(this, 71196);
 
+        chatterManager = new ChatterManager(this);
         formatManager = new FormatManager(this);
         modifierManager = new ModifierManager(this);
         playerManager = new PlayerManager(this);
@@ -120,7 +123,6 @@ public class ChatomizerPlugin extends JavaPlugin {
         } else {
             Log.warning("Autosaving DISABLED. It is recommended that you enable it to prevent data loss.");
         }
-
 
         Log.info(String.format("%s v%s by Stealth2800 enabled.", getName(), getDescription().getVersion()));
     }
@@ -145,6 +147,10 @@ public class ChatomizerPlugin extends JavaPlugin {
 
     public HookVault getHookVault() {
         return hookVault;
+    }
+
+    public ChatterManager getChatterManager() {
+        return chatterManager;
     }
 
     public FormatManager getFormatManager() {
