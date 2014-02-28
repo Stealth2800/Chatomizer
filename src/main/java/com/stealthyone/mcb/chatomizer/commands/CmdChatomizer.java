@@ -108,7 +108,7 @@ public class CmdChatomizer implements CommandExecutor {
     private void cmdChat(CommandSender sender, Command command, String label, String[] args) {
         if (!PermissionNode.CHAT.isAllowed(sender, true)) return;
 
-        plugin.getChatterManager().
+        //plugin.getChatterManager().
     }
 
     /*
