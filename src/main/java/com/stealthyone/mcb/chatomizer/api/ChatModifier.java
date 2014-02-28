@@ -18,7 +18,7 @@
  */
 package com.stealthyone.mcb.chatomizer.api;
 
-import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
 
 public abstract class ChatModifier {
 

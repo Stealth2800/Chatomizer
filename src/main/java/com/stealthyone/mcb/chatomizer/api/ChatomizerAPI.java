@@ -19,9 +19,9 @@
 package com.stealthyone.mcb.chatomizer.api;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
-import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
 import com.stealthyone.mcb.chatomizer.api.events.AsyncPlayerMultiChatEvent;
-import com.stealthyone.mcb.chatomizer.backend.PlayerManager;
+import com.stealthyone.mcb.chatomizer.backend.players.PlayerManager;
 import com.stealthyone.mcb.chatomizer.backend.formats.FormatManager;
 import com.stealthyone.mcb.chatomizer.config.ConfigHelper;
 import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;

@@ -20,8 +20,8 @@ package com.stealthyone.mcb.chatomizer.api.events;
 
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.api.ChatFormat;
-import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
-import com.stealthyone.mcb.chatomizer.api.chatters.ChatterConsole;
+import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.backend.chatters.ChatterConsole;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
