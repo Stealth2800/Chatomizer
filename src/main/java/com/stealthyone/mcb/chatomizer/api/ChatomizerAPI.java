@@ -75,11 +75,11 @@ public final class ChatomizerAPI {
             recipientFormats.put(recipient, recipient.getChatFormat());
         }
 
-        if (sender.hasPermission(PermissionNode.CHAT_COLOR.getPermission()))
+        if (sender.hasPermission(PermissionNode.CHAT_COLOR.getPermission().getName()))
             message = ChatColorUtils.colorizeMessage(message);
-        if (sender.hasPermission(PermissionNode.CHAT_FORMATTING.getPermission()))
+        if (sender.hasPermission(PermissionNode.CHAT_FORMATTING.getPermission().getName()))
             message = ChatColorUtils.formatMessage(message);
-        if (sender.hasPermission(PermissionNode.CHAT_MAGIC.getPermission()))
+        if (sender.hasPermission(PermissionNode.CHAT_MAGIC.getPermission().getName()))
             message = ChatColorUtils.magicfyMessage(message);
 
         AsyncPlayerMultiChatEvent multiChatEvent = new AsyncPlayerMultiChatEvent(sender, message, recipientFormats, sendToConsole, consoleFormat);

@@ -21,10 +21,8 @@ package com.stealthyone.mcb.chatomizer.listeners;
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.api.ChatFormat;
 import com.stealthyone.mcb.chatomizer.api.ChatModifier;
-import com.stealthyone.mcb.chatomizer.api.ChatomizerAPI;
-import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
-import com.stealthyone.mcb.chatomizer.backend.chatters.ChatterPlayer;
 import com.stealthyone.mcb.chatomizer.api.events.AsyncPlayerMultiChatEvent;
+import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -62,9 +60,9 @@ public class PlayerListener implements Listener {
 
         Set<Chatter> recipients = new HashSet<>();
         for (Player recipient : e.getRecipients()) {
-            recipients.add(new ChatterPlayer(recipient));
+            //recipients.add(new ChatterPlayer(recipient));
         }
-        ChatomizerAPI.createChatEvent(new ChatterPlayer(e.getPlayer()), e.getMessage(), recipients);
+        //ChatomizerAPI.createChatEvent(new ChatterPlayer(e.getPlayer()), e.getMessage(), recipients);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
