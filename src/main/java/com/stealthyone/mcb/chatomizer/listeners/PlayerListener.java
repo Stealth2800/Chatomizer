@@ -21,8 +21,10 @@ package com.stealthyone.mcb.chatomizer.listeners;
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.api.ChatFormat;
 import com.stealthyone.mcb.chatomizer.api.ChatModifier;
+import com.stealthyone.mcb.chatomizer.api.ChatomizerAPI;
 import com.stealthyone.mcb.chatomizer.api.events.AsyncPlayerMultiChatEvent;
 import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.backend.chatters.ChatterManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -58,11 +60,12 @@ public class PlayerListener implements Listener {
             e.setCancelled(true);
         }
 
+        ChatterManager chatterManager = plugin.getChatterManager();
         Set<Chatter> recipients = new HashSet<>();
         for (Player recipient : e.getRecipients()) {
-            //recipients.add(new ChatterPlayer(recipient));
+            recipients.add(chatterManager.getChatter(recipient.getName()));
         }
-        //ChatomizerAPI.createChatEvent(new ChatterPlayer(e.getPlayer()), e.getMessage(), recipients);
+        ChatomizerAPI.createChatEvent(chatterManager.getChatter(e.getPlayer().getName()), e.getMessage(), recipients);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -73,7 +76,10 @@ public class PlayerListener implements Listener {
         Map<String, ChatModifier> specificModifications = new HashMap<>();
         for (Entry<String, ChatModifier> curModifier : plugin.getModifierManager().getRegisteredModifiers().entrySet()) {
             if (!curModifier.getValue().isRecipientSpecific()) {
-                genericModifications.put(curModifier.getKey(), curModifier.getValue().getReplacement(sender, null));
+                String replacement = curModifier.getValue().getReplacement(sender, null);
+                if (replacement != null) {
+                    genericModifications.put(curModifier.getKey(), replacement);
+                }
             } else {
                 specificModifications.put(curModifier.getKey(), curModifier.getValue());
             }
@@ -98,7 +104,10 @@ public class PlayerListener implements Listener {
                 // Replace specific modifiers.
                 for (Entry<String, ChatModifier> specificMod : specificModifications.entrySet()) {
                     if (finalMessage.contains(specificMod.getKey())) {
-                        finalMessage = finalMessage.replace(specificMod.getKey(), specificMod.getValue().getReplacement(sender, recipient));
+                        String replacement = specificMod.getValue().getReplacement(sender, recipient);
+                        if (replacement != null) {
+                            finalMessage = finalMessage.replace(specificMod.getKey(), replacement);
+                        }
                     }
                 }
 
