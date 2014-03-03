@@ -21,17 +21,16 @@ package com.stealthyone.mcb.chatomizer.api;
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
 import com.stealthyone.mcb.chatomizer.api.events.AsyncPlayerMultiChatEvent;
+import com.stealthyone.mcb.chatomizer.backend.chatters.ChatterManager;
 import com.stealthyone.mcb.chatomizer.backend.players.PlayerManager;
 import com.stealthyone.mcb.chatomizer.backend.formats.FormatManager;
 import com.stealthyone.mcb.chatomizer.config.ConfigHelper;
 import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
 import com.stealthyone.mcb.chatomizer.utils.ChatColorUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public final class ChatomizerAPI {
 
@@ -57,6 +56,42 @@ public final class ChatomizerAPI {
      */
     public static boolean unregisterChatModifier(ChatModifier chatModifier) {
         return ChatomizerPlugin.getInstance().getModifierManager().unregisterModifier(chatModifier);
+    }
+
+    public static AsyncPlayerMultiChatEvent createChatEvent(Chatter sender, String message) {
+        ChatomizerPlugin plugin = ChatomizerPlugin.getInstance();
+
+        FormatManager formatManager = plugin.getFormatManager();
+        PlayerManager playerManager = plugin.getPlayerManager();
+
+        Map<Chatter, ChatFormat> recipientFormats = new HashMap<>();
+        recipientFormats.put(sender, sender.getChatFormat());
+
+        boolean sendToConsole = ConfigHelper.LOG_CHAT.get();
+        ChatFormat consoleFormat = formatManager.getFormat(ConfigHelper.CONSOLE_CHAT_FORMAT.get());
+
+        ChatterManager chatterManager = plugin.getChatterManager();
+        Set<Chatter> recipients = new HashSet<>();
+        for (Player recipient : Bukkit.getOnlinePlayers()) {
+            recipients.add(chatterManager.getChatter(recipient.getName()));
+        }
+
+        for (Chatter recipient : recipients) {
+            recipientFormats.put(recipient, recipient.getChatFormat());
+        }
+
+        if (sender.hasPermission(PermissionNode.CHAT_COLOR.getPermission().getName()))
+            message = ChatColorUtils.colorizeMessage(message);
+        if (sender.hasPermission(PermissionNode.CHAT_FORMATTING.getPermission().getName()))
+            message = ChatColorUtils.formatMessage(message);
+        if (sender.hasPermission(PermissionNode.CHAT_MAGIC.getPermission().getName()))
+            message = ChatColorUtils.magicfyMessage(message);
+
+        AsyncPlayerMultiChatEvent multiChatEvent = new AsyncPlayerMultiChatEvent(sender, message, recipientFormats, sendToConsole, consoleFormat);
+
+        Bukkit.getPluginManager().callEvent(multiChatEvent);
+
+        return multiChatEvent;
     }
 
     public static AsyncPlayerMultiChatEvent createChatEvent(Chatter sender, String message, Set<Chatter> recipients) {
