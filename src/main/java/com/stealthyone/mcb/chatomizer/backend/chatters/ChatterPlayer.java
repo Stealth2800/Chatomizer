@@ -10,7 +10,7 @@ public class ChatterPlayer extends Chatter {
     private Player player;
 
     public ChatterPlayer(YamlFileManager file, Player player) {
-        super(file, player.getName(), player.getDisplayName());
+        super(file);
         this.player = player;
     }
 

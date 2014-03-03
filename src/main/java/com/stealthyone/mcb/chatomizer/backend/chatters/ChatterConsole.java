@@ -8,8 +8,23 @@ import org.bukkit.Bukkit;
 
 public class ChatterConsole extends Chatter {
 
+    private String name;
+    private String displayName;
+
     public ChatterConsole(YamlFileManager file) {
-        super(file, "CONSOLE", null);
+        super(file);
+        name = file.getConfig().getString("name", "CONSOLE");
+        displayName = file.getConfig().getString("displayName", "Console");
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return displayName;
     }
 
     @Override

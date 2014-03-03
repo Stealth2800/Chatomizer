@@ -8,15 +8,10 @@ public abstract class Chatter {
 
     private YamlFileManager file;
 
-    private String name;
-    private String displayName;
-
-    public Chatter(YamlFileManager file, String name, String displayName) {
-        Validate.notNull(name, "Name cannot be null.");
+    public Chatter(YamlFileManager file) {
+        Validate.notNull(file, "File must not be null.");
 
         this.file = file;
-        this.name = name;
-        this.displayName = (displayName == null) ? name : displayName;
     }
 
     @Override
@@ -26,7 +21,7 @@ public abstract class Chatter {
         } else if (!this.getClass().isInstance(obj)) {
              return false;
         } else {
-            return ((Chatter) obj).name.equals(name);
+            return ((Chatter) obj).getName().equals(getName());
         }
     }
 
@@ -34,13 +29,9 @@ public abstract class Chatter {
         return file;
     }
 
-    public String getName() {
-        return name;
-    }
+    public abstract String getName();
 
-    public String getDisplayName() {
-        return displayName;
-    }
+    public abstract String getDisplayName();
 
     public abstract String getWorldName();
 

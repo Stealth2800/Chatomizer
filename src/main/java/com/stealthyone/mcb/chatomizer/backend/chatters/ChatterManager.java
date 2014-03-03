@@ -5,7 +5,7 @@ import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
 import com.stealthyone.mcb.chatomizer.utils.YamlFileManager;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.HashMap;
@@ -41,7 +41,19 @@ public class ChatterManager {
                 Log.warning("Unable to load player chatter '" + name + "' -> missing UUID mapping.");
                 return;
             }
-            loadChatter(uuid);
+
+            String playerName = plugin.getPlayerManager().getName(uuid);
+            if (playerName == null) {
+                Log.warning("Unable to load player chatter with UUID '" + uuid + "' -> missing name mapping.");
+                return;
+            }
+            Player player = Bukkit.getPlayerExact(playerName);
+            if (player == null) {
+                Log.warning("Unable to load player chatter with UUID '" + uuid + "' -> player not online.");
+                return;
+            }
+
+            loadChatter(player);
             return;
         }
 
@@ -55,9 +67,10 @@ public class ChatterManager {
         Log.info("Loaded CONSOLE chatter.");
     }
 
-    public void loadChatter(UUID playerUuid) {
-        Validate.notNull(playerUuid, "Player UUID must not be null.");
+    public void loadChatter(Player player) {
+        Validate.notNull(player, "Player must not be null.");
 
+        UUID playerUuid = player.getUniqueId();
         String name = plugin.getPlayerManager().getName(playerUuid);
         if (name == null) {
             Log.warning("Unable to load player chatter with UUID '" + playerUuid + "' -> missing name mapping.");
@@ -70,9 +83,8 @@ public class ChatterManager {
             return;
         }
 
-        OfflinePlayer player = Bukkit.getOfflinePlayer(name);
-
-        //Chatter chatter = (player.isOnline()) ? new ChatterPlayer(new YamlFileManager(file), player.getPlayer()) : new ChatterOfflinePlayer(file);
+        Chatter chatter = new ChatterPlayer(new YamlFileManager(file), player.getPlayer());
+        loadedChatters.put(name, chatter);
     }
 
     public Chatter getChatter(String name) {
