@@ -7,6 +7,7 @@ errors:
   must_be_player: '&cYou must be a player to do this.'
   no_permission: '&cYou do not have permission to use this command.'
   page_must_be_int: '&cPage number must be an integer.'
+  unable_to_chat: '&cYou cannot chat right now.'
 notices:
   format_default_notice: '&3Current default: &6%s&3.'
   format_default_set: '&aUpdated default chat format to ''&6%s&a''.'

@@ -31,7 +31,9 @@ public enum ErrorMessage {
 
     MUST_BE_PLAYER,
     NO_PERMISSION,
-    PAGE_MUST_BE_INT;
+    PAGE_MUST_BE_INT,
+
+    UNABLE_TO_CHAT;
 
     private String path;
 

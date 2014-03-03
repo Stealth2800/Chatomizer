@@ -23,6 +23,7 @@ import org.bukkit.command.CommandSender;
 
 public enum UsageMessage {
 
+    CHAT("{TAG}/{LABEL} chat <message>"),
     STYLE("{TAG}/{LABEL} style <style name>"),
     STYLE_DIRECT("{TAG}/{LABEL} <style name>"),
     STYLE_INFO("{TAG}/{LABEL} info <style name>");
