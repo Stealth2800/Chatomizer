@@ -21,6 +21,8 @@ package com.stealthyone.mcb.chatomizer.commands;
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
 import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
 import com.stealthyone.mcb.chatomizer.api.ChatFormat;
+import com.stealthyone.mcb.chatomizer.api.ChatomizerAPI;
+import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
 import com.stealthyone.mcb.chatomizer.messages.ErrorMessage;
 import com.stealthyone.mcb.chatomizer.messages.NoticeMessage;
 import com.stealthyone.mcb.chatomizer.messages.UsageMessage;
@@ -47,13 +49,16 @@ public class CmdChatomizer implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length > 0) {
-            if (label.equalsIgnoreCase("chatstyle") || label.equalsIgnoreCase("cstyle")) {
+            if (label.equalsIgnoreCase("chat")) {
+                cmdChat(sender, command, label, args, 0);
+                return true;
+            } else if (label.equalsIgnoreCase("chatstyle") || label.equalsIgnoreCase("cstyle")) {
                 cmdStyle(sender, command, label, args, 0);
                 return true;
             } else {
                 switch (args[0].toLowerCase()) {
                     case "chat":
-                        cmdChat(sender, command, label, args);
+                        cmdChat(sender, command, label, args, 1);
                         return true;
 
                     /* Default format info */
@@ -105,10 +110,29 @@ public class CmdChatomizer implements CommandExecutor {
     /*
      * Send chat message (mainly for console usage)
      */
-    private void cmdChat(CommandSender sender, Command command, String label, String[] args) {
+    private void cmdChat(CommandSender sender, Command command, String label, String[] args, int startIndex) {
         if (!PermissionNode.CHAT.isAllowed(sender, true)) return;
 
-        //plugin.getChatterManager().
+        if (args.length < startIndex + 1) {
+            UsageMessage.CHAT.sendTo(sender, label);
+            return;
+        }
+
+        Chatter chatter = plugin.getChatterManager().getChatter(sender.getName());
+        if (chatter == null) {
+            ErrorMessage.UNABLE_TO_CHAT.sendTo(sender);
+            return;
+        }
+
+        StringBuilder message = new StringBuilder();
+        for (int i = startIndex + 1; i < args.length; i++) {
+            if (message.length() > 0) {
+                message.append(" ");
+            }
+            message.append(args[i]);
+        }
+
+        ChatomizerAPI.createChatEvent(chatter, message.toString());
     }
 
     /*
