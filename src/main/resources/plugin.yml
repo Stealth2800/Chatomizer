@@ -1,11 +1,11 @@
 name: ${project.name}
 version: ${project.version}
-description: Powerful chat API for Bukkit
+description: Powerful chat manager and API for Bukkit
 depend: []
 softdepend: [Vault]
 author: Stealth2800
 website: http://stealthyone.com/bukkit
-main: com.stealthyone.mcb.chatomizer.ChatomizerPlugin
+main: com.stealthyone.mcb.chatomizer.Chatomizer
 commands:
   chatomizer:
     aliases: [chatomiser, cm, chatstyle, cstyle, chat]

@@ -16,24 +16,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.backend.modifiers.defaults;
+package com.stealthyone.mcb.chatomizer.backend.chatters;
 
-import com.stealthyone.mcb.chatomizer.Chatomizer;
 import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
-import com.stealthyone.mcb.chatomizer.backend.chatters.PlayerChatter;
-import com.stealthyone.mcb.chatomizer.api.modifiers.ChatModifier;
-import net.milkbowl.vault.chat.Chat;
+import com.stealthyone.mcb.stbukkitlib.storage.YamlFileManager;
+import org.apache.commons.lang.Validate;
+import org.bukkit.configuration.file.FileConfiguration;
 
-public class ModifierSenderVaultSuffix extends ChatModifier {
+public abstract class FileBasedChatter extends Chatter {
 
-    public ModifierSenderVaultSuffix() {
-        super("SSUFFIX", false);
+    private YamlFileManager file;
+
+    public FileBasedChatter(YamlFileManager file) {
+        Validate.notNull(file, "File cannot be null.");
+
+        this.file = file;
+        reload();
+    }
+
+    public void reload() {
+        FileConfiguration config = file.getConfig();
+
+        setChatFormat(config.getString("chatFormat", "default"));
+        setMuted(config.getBoolean("muted", false));
     }
 
     @Override
-    public String getReplacement(Chatter sender, Chatter recipient) {
-        Chat chat = Chatomizer.getInstance().getHookVault().getChat();
-        return (chat == null || !(sender instanceof PlayerChatter)) ? "" : chat.getPlayerSuffix(sender.getWorldName(), sender.getName());
+    public void save() {
+        FileConfiguration config = file.getConfig();
+
+        config.set("muted", isMuted());
+        config.set("format", getChatFormat());
+
+        file.saveFile();
     }
 
 }

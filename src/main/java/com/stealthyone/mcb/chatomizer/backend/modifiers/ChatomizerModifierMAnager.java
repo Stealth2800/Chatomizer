@@ -1,6 +1,6 @@
 /*
  * Chatomizer - Advanced chat plugin with endless possibilities
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,23 +18,28 @@
  */
 package com.stealthyone.mcb.chatomizer.backend.modifiers;
 
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
-import com.stealthyone.mcb.chatomizer.api.ChatModifier;
+import com.stealthyone.mcb.chatomizer.Chatomizer;
+import com.stealthyone.mcb.chatomizer.api.modifiers.ChatModifier;
+import com.stealthyone.mcb.chatomizer.api.modifiers.ModifierManager;
 import com.stealthyone.mcb.chatomizer.backend.modifiers.defaults.*;
+import com.stealthyone.mcb.stbukkitlib.logging.LogHelper;
+import org.apache.commons.lang.Validate;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ModifierManager {
+public class ChatomizerModifierManager implements ModifierManager {
 
-    private ChatomizerPlugin plugin;
+    private Chatomizer plugin;
 
     private Map<String, ChatModifier> registeredModifiers = new HashMap<>();
 
-    public ModifierManager(ChatomizerPlugin plugin) {
+    public ChatomizerModifierManager(Chatomizer plugin) {
         this.plugin = plugin;
+    }
 
+    public void load() {
         /* Register built in modifiers. */
         registerModifier(new ModifierRecipientName());
         registerModifier(new ModifierRecipientDisplayName());
@@ -51,32 +56,38 @@ public class ModifierManager {
         registerModifier(new ModifierSenderVaultSuffix());
     }
 
+    @Override
     public boolean registerModifier(ChatModifier modifier) {
+        Validate.notNull(modifier, "Modifier cannot be null.");
+
         String code = modifier.getCode();
         if (registeredModifiers.containsKey(code)) {
-            Log.warning("Unable to register chat modifier '" + code + "' -> already registered.");
+            plugin.getLogger().warning("Unable to register chat modifier '" + code + "' - already registered.");
             return false;
         } else {
             registeredModifiers.put(code, modifier);
-            Log.info("Registered chat modifier '" + code + "'");
+            LogHelper.debug(plugin, "Registered chat modifier '" + code + "'");
             return true;
         }
     }
 
+    @Override
     public boolean unregisterModifier(ChatModifier modifier) {
+        Validate.notNull(modifier, "Modifier cannot be null.");
+
         String code = modifier.getCode();
         if (!registeredModifiers.containsKey(code)) {
-            Log.warning("Unable to unregister chat modifier '" + code + "' -> not registered.");
+            plugin.getLogger().warning("Unable to unregister chat modifier '" + code + "' - not registered.");
             return false;
         } else {
             registeredModifiers.remove(code);
-            Log.info("Unregistered chat modifier '" + code + "'");
+            plugin.getLogger().info("Unregistered chat modifier '" + code + "'");
             return true;
         }
     }
 
     public Map<String, ChatModifier> getRegisteredModifiers() {
-        return registeredModifiers;
+        return Collections.unmodifiableMap(registeredModifiers);
     }
 
 }

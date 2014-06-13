@@ -6,8 +6,9 @@
 
     <groupId>com.stealthyone.mcb</groupId>
     <artifactId>chatomizer</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>Chatomizer</name>
+    <url>http://stealthyone.com</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,22 +19,21 @@
         <url>http://ci.stealthyone.com</url>
     </ciManagement>
 
-    <distributionManagement>
-        <site>
-            <id>jd.stealthyone.com</id>
-            <url>file:///home/javadocs/public_html/chatomizer</url>
-        </site>
+    <scm>
+        <connection>scm:git:git://github.com/Stealth2800/Chatomizer.git</connection>
+        <developerConnection>scm:git:git@github.com:Stealth2800/Chatomizer.git</developerConnection>
+        <url>https://github.com/Stealth2800/Chatomizer</url>
+    </scm>
 
+    <distributionManagement>
         <repository>
-            <id>releases</id>
-            <name>repo.stealthyone.com Releases</name>
-            <url>http://repo.stealthyone.com/artifactory/plugins-release</url>
+            <id>stealthyone-releases</id>
+            <url>http://repo.stealthyone.com/content/repositories/releases/</url>
         </repository>
 
         <snapshotRepository>
-            <id>snapshots</id>
-            <name>repo.stealthyone.com Snapshots</name>
-            <url>http://repo.stealthyone.com/artifactory/plugins-snapshot</url>
+            <id>stealthyone-snapshots</id>
+            <url>http://repo.stealthyone.com/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -44,8 +44,18 @@
         </repository>
 
         <repository>
+            <id>stealthyone-repo</id>
+            <url>http://repo.stealthyone.com/content/groups/public</url>
+        </repository>
+
+        <repository>
             <id>vault-repo</id>
             <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+        </repository>
+
+        <repository>
+            <id>fanciful-repo</id>
+            <url>https://raw.github.com/mkremins/fanciful/mvn-repo/</url>
         </repository>
     </repositories>
 
@@ -53,7 +63,13 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.2-R0.3-SNAPSHOT</version>
+            <version>1.7.9-R0.3-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.stealthyone.mcb</groupId>
+            <artifactId>stbukkitlib</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -61,74 +77,99 @@
             <artifactId>Vault</artifactId>
             <version>1.2.32</version>
         </dependency>
+
+        <dependency>
+            <groupId>mkremins</groupId>
+            <artifactId>fanciful</artifactId>
+            <version>0.2.0-SNAPSHOT</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
     <build>
+        <defaultGoal>clean install</defaultGoal>
+
         <resources>
             <resource>
                 <directory>src/main/java</directory>
+
                 <excludes>
                     <exclude>**/*.java</exclude>
                 </excludes>
             </resource>
+
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <defaultGoal>clean install</defaultGoal>
-        <finalName>${project.name} v${project.version}</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>3.1</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+
+                        <configuration>
+                            <minimizeJar>false</minimizeJar>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.stealthyone.mcb.stbukkitlib</pattern>
+                                    <shadedPattern>com.stealthyone.mcb.chatomizer.shade.stbukkitlib</shadedPattern>
+                                </relocation>
+
+                                <relocation>
+                                    <pattern>mkremins.fanciful</pattern>
+                                    <shadedPattern>com.stealthyone.mcb.chatomizer.shade.fanciful</shadedPattern>
+                                </relocation>
+                            </relocations>
+
+                            <artifactSet>
+                                <includes>
+                                    <include>com.stealthyone.mcb:stbukkitlib</include>
+                                    <include>mkremins:fanciful</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.1</version>
+                <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                     </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.0-beta-3</version>
-                <configuration>
-                    <reportPlugins>
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>jxr-maven-plugin</artifactId>
-                            <version>2.0-beta-1</version>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>2.7</version>
-                            <configuration>
-                                <linksource>true</linksource>
-                            </configuration>
-                            <reportSets>
-                                <reportSet>
-                                    <reports>
-                                        <report>javadoc</report>
-                                    </reports>
-                                </reportSet>
-                            </reportSets>
-                        </plugin>
-                    </reportPlugins>
                 </configuration>
             </plugin>
         </plugins>

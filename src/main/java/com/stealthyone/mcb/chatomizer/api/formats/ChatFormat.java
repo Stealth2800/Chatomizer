@@ -1,6 +1,6 @@
 /*
  * Chatomizer - Advanced chat plugin with endless possibilities
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,13 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.config;
+package com.stealthyone.mcb.chatomizer.api.formats;
 
-public class ConfigHelper {
+import java.util.Map;
 
-    public final static ConfigBoolean DEBUG = ConfigBoolean.DEBUG;
-    public final static ConfigBoolean LOG_CHAT = ConfigBoolean.LOG_CHAT;
+public interface ChatFormat {
 
-    public final static ConfigString CONSOLE_CHAT_FORMAT = ConfigString.CONSOLE_CHAT_FORMAT;
+    public String getName();
+
+    public String getCreator();
+
+    public boolean isHidden();
+
+    public boolean checkPermission();
+
+    public String getGroupFormat(String groupName);
+
+    public Map<String, String> getAllFormats();
 
 }

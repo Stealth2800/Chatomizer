@@ -1,6 +1,6 @@
 /*
  * Chatomizer - Advanced chat plugin with endless possibilities
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,28 +16,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.config;
+package com.stealthyone.mcb.chatomizer.backend.chatters;
 
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
+import com.stealthyone.mcb.stbukkitlib.storage.YamlFileManager;
+import org.bukkit.Bukkit;
 
-public enum ConfigBoolean {
+public class ConsoleChatter extends FileBasedChatter {
 
-    DEBUG("Debug"),
+    public ConsoleChatter(YamlFileManager file) {
+        super(file);
 
-    LOG_CHAT("Log chat to console");
-
-    private String path;
-
-    private ConfigBoolean(String path) {
-        this.path = path;
+        setIdentifier(new ConsoleChatterIdentifier());
     }
 
-    public boolean get() {
-        return ChatomizerPlugin.getInstance().getConfig().getBoolean(path);
+    @Override
+    public String getName() {
+        return "CONSOLE";
     }
 
-    public boolean get(boolean defaultValue) {
-        return ChatomizerPlugin.getInstance().getConfig().getBoolean(path, defaultValue);
+    @Override
+    public String getDisplayName() {
+        return "Console";
+    }
+
+    @Override
+    public String getWorldName() {
+        return null;
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        Bukkit.getConsoleSender().sendMessage(message);
     }
 
 }

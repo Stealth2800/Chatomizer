@@ -1,6 +1,6 @@
 /*
  * Chatomizer - Advanced chat plugin with endless possibilities
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,30 +18,24 @@
  */
 package com.stealthyone.mcb.chatomizer.permissions;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.command.CommandSender;
-
-import java.util.Arrays;
 
 public enum VariablePermissionNode {
 
-    STYLES(1);
+    FORMATS;
 
-    private int varCount;
     private String permission;
 
-    private VariablePermissionNode(int varCount) {
-        this.varCount = varCount;
+    private VariablePermissionNode() {
         permission = "chatomizer." + toString().toLowerCase().replace("_", ".");
     }
 
     public boolean isAllowed(CommandSender sender, String... variables) {
-        Validate.notNull(sender);
-        Validate.notNull(variables);
-        if (variables.length != varCount)
-            throw new IllegalArgumentException("Invalid number of variables for VariablePermissionNode: " + toString());
-
-        return sender.hasPermission(permission + Arrays.toString(variables).replace("[", ".").replace("]", "").replace(",", "."));
+        StringBuilder finalPerm = new StringBuilder(permission);
+        for (String string : variables) {
+            finalPerm.append(".").append(string);
+        }
+        return sender.hasPermission(finalPerm.toString());
     }
 
 }

@@ -1,6 +1,6 @@
 /*
  * Chatomizer - Advanced chat plugin with endless possibilities
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,29 +18,13 @@
  */
 package com.stealthyone.mcb.chatomizer.messages;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
+import com.stealthyone.mcb.chatomizer.Chatomizer;
+import com.stealthyone.mcb.stbukkitlib.messages.MessageRef;
 
-public enum UsageMessage {
+public class ChatomizerMessageRef extends MessageRef {
 
-    CHAT("{TAG}/{LABEL} chat <message>"),
-    STYLE("{TAG}/{LABEL} style <style name>"),
-    STYLE_DIRECT("{TAG}/{LABEL} <style name>"),
-    STYLE_INFO("{TAG}/{LABEL} info <style name>");
-
-    private final String TAG = ChatColor.GOLD + "[Chatomizer] " + ChatColor.RED;
-    private String message;
-
-    private UsageMessage(String message) {
-        this.message = message.replace("{TAG}", TAG);
-    }
-
-    public void sendTo(CommandSender sender, String label) {
-        sender.sendMessage(message.replace("{LABEL}", label));
-    }
-
-    public String getMessage(String label) {
-        return message.replace("{LABEL}", label);
+    public ChatomizerMessageRef(String category, String message) {
+        super(Chatomizer.getInstance().getMessageManager(), category, message);
     }
 
 }

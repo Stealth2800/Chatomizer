@@ -1,6 +1,6 @@
 /*
  * Chatomizer - Advanced chat plugin with endless possibilities
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,122 +18,41 @@
  */
 package com.stealthyone.mcb.chatomizer.api;
 
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
-import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
-import com.stealthyone.mcb.chatomizer.api.events.AsyncPlayerMultiChatEvent;
-import com.stealthyone.mcb.chatomizer.backend.chatters.ChatterManager;
-import com.stealthyone.mcb.chatomizer.backend.players.PlayerManager;
-import com.stealthyone.mcb.chatomizer.backend.formats.FormatManager;
-import com.stealthyone.mcb.chatomizer.config.ConfigHelper;
-import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
-import com.stealthyone.mcb.chatomizer.utils.ChatColorUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
-import java.util.*;
+import com.stealthyone.mcb.chatomizer.Chatomizer;
+import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.api.modifiers.ModifierManager;
 
 public final class ChatomizerAPI {
 
     private ChatomizerAPI() { }
 
     /**
-     * Register a chat modifier.
+     * Returns the chat manager instance.
      *
-     * @param chatModifier Chat modifier to register.
-     * @return True if modifier registered successfully.
-     *         False if modifier already registered.
+     * @return The current chat manager instance.
      */
-    public static boolean registerChatModifier(ChatModifier chatModifier) {
-        return ChatomizerPlugin.getInstance().getModifierManager().registerModifier(chatModifier);
+    public static ChatManager getChatManager() {
+        return Chatomizer.getInstance().getChatManager();
     }
 
     /**
-     * Unregister a chat modifier.
+     * Returns the modifier manager instance.
      *
-     * @param chatModifier Chat modifier to unregister.
-     * @return True if modifier unregistered successfully.
-     *         False if modifier not registered.
+     * @return The current modifier manager instance.
      */
-    public static boolean unregisterChatModifier(ChatModifier chatModifier) {
-        return ChatomizerPlugin.getInstance().getModifierManager().unregisterModifier(chatModifier);
+    public static ModifierManager getModifierManager() {
+        return Chatomizer.getInstance().getModifierManager();
     }
 
-    public static AsyncPlayerMultiChatEvent createChatEvent(Chatter sender, String message) {
-        ChatomizerPlugin plugin = ChatomizerPlugin.getInstance();
-
-        FormatManager formatManager = plugin.getFormatManager();
-        PlayerManager playerManager = plugin.getPlayerManager();
-
-        Map<Chatter, ChatFormat> recipientFormats = new HashMap<>();
-        recipientFormats.put(sender, sender.getChatFormat());
-
-        boolean sendToConsole = ConfigHelper.LOG_CHAT.get();
-        ChatFormat consoleFormat = formatManager.getFormat(ConfigHelper.CONSOLE_CHAT_FORMAT.get());
-
-        ChatterManager chatterManager = plugin.getChatterManager();
-        Set<Chatter> recipients = new HashSet<>();
-        for (Player recipient : Bukkit.getOnlinePlayers()) {
-            recipients.add(chatterManager.getChatter(recipient.getName()));
-        }
-
-        for (Chatter recipient : recipients) {
-            recipientFormats.put(recipient, recipient.getChatFormat());
-        }
-
-        if (sender.hasPermission(PermissionNode.CHAT_COLOR.getPermission().getName()))
-            message = ChatColorUtils.colorizeMessage(message);
-        if (sender.hasPermission(PermissionNode.CHAT_FORMATTING.getPermission().getName()))
-            message = ChatColorUtils.formatMessage(message);
-        if (sender.hasPermission(PermissionNode.CHAT_MAGIC.getPermission().getName()))
-            message = ChatColorUtils.magicfyMessage(message);
-
-        AsyncPlayerMultiChatEvent multiChatEvent = new AsyncPlayerMultiChatEvent(sender, message, recipientFormats, sendToConsole, consoleFormat);
-
-        Bukkit.getPluginManager().callEvent(multiChatEvent);
-
-        return multiChatEvent;
-    }
-
-    public static AsyncPlayerMultiChatEvent createChatEvent(Chatter sender, String message, Set<Chatter> recipients) {
-        ChatomizerPlugin plugin = ChatomizerPlugin.getInstance();
-
-        FormatManager formatManager = plugin.getFormatManager();
-        PlayerManager playerManager = plugin.getPlayerManager();
-
-        Map<Chatter, ChatFormat> recipientFormats = new HashMap<>();
-        recipientFormats.put(sender, sender.getChatFormat());
-
-        boolean sendToConsole = ConfigHelper.LOG_CHAT.get();
-        ChatFormat consoleFormat = formatManager.getFormat(ConfigHelper.CONSOLE_CHAT_FORMAT.get());
-
-        for (Chatter recipient : recipients) {
-            recipientFormats.put(recipient, recipient.getChatFormat());
-        }
-
-        if (sender.hasPermission(PermissionNode.CHAT_COLOR.getPermission().getName()))
-            message = ChatColorUtils.colorizeMessage(message);
-        if (sender.hasPermission(PermissionNode.CHAT_FORMATTING.getPermission().getName()))
-            message = ChatColorUtils.formatMessage(message);
-        if (sender.hasPermission(PermissionNode.CHAT_MAGIC.getPermission().getName()))
-            message = ChatColorUtils.magicfyMessage(message);
-
-        AsyncPlayerMultiChatEvent multiChatEvent = new AsyncPlayerMultiChatEvent(sender, message, recipientFormats, sendToConsole, consoleFormat);
-
-        Bukkit.getPluginManager().callEvent(multiChatEvent);
-
-        return multiChatEvent;
-    }
-
-    public static ChatFormat getChatFormat(String name) {
-        return ChatomizerPlugin.getInstance().getFormatManager().getFormat(name);
-    }
-
-    public static UUID getPlayerUuid(String name) {
-        return ChatomizerPlugin.getInstance().getPlayerManager().getUuid(name);
-    }
-
-    public static String getPlayerName(UUID uuid) {
-        return ChatomizerPlugin.getInstance().getPlayerManager().getName(uuid);
+    /**
+     * Creates a new chat event and handles it for you.
+     *
+     * @param sender Sender of the message.
+     * @param message Message to be sent.
+     * @return The new event instance.
+     */
+    public static MultiChatEvent createChatEvent(Chatter sender, String message) {
+        return ChatomizerAPI.getChatManager().createChatEvent(sender, message);
     }
 
 }

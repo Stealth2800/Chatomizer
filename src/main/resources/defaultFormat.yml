@@ -1,0 +1,7 @@
+name: default
+creator: Chatomizer
+hidden: false
+permission: false
+groups:
+  default: '<{SNAME}> {MESSAGE}'
+  administrator: '&4<&f{SNAME}&4> &c{MESSAGE}'

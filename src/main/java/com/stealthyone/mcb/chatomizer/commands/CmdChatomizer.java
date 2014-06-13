@@ -1,6 +1,6 @@
 /*
  * Chatomizer - Advanced chat plugin with endless possibilities
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,109 +18,115 @@
  */
 package com.stealthyone.mcb.chatomizer.commands;
 
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
-import com.stealthyone.mcb.chatomizer.api.ChatFormat;
+import com.stealthyone.mcb.chatomizer.Chatomizer;
+import com.stealthyone.mcb.chatomizer.api.formats.ChatFormat;
 import com.stealthyone.mcb.chatomizer.api.ChatomizerAPI;
-import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
-import com.stealthyone.mcb.chatomizer.messages.ErrorMessage;
-import com.stealthyone.mcb.chatomizer.messages.NoticeMessage;
-import com.stealthyone.mcb.chatomizer.messages.UsageMessage;
+import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.messages.Messages.ErrorMessages;
+import com.stealthyone.mcb.chatomizer.messages.Messages.NoticeMessages;
+import com.stealthyone.mcb.chatomizer.messages.Messages.PluginMessages;
+import com.stealthyone.mcb.chatomizer.messages.Messages.UsageMessages;
 import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
-import com.stealthyone.mcb.chatomizer.utils.PlayerUtils;
-import com.stealthyone.mcb.chatomizer.utils.StringUtils;
-import com.stealthyone.mcb.chatomizer.utils.UpdateChecker;
+import com.stealthyone.mcb.stbukkitlib.updates.UpdateChecker;
+import com.stealthyone.mcb.stbukkitlib.utils.QuickMap;
+import com.stealthyone.mcb.stbukkitlib.utils.StringUtils;
+import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.Map.Entry;
 
 public class CmdChatomizer implements CommandExecutor {
 
-    private ChatomizerPlugin plugin;
+    private Chatomizer plugin;
 
-    public CmdChatomizer(ChatomizerPlugin plugin) {
+    public CmdChatomizer(Chatomizer plugin) {
         this.plugin = plugin;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length > 0) {
-            if (label.equalsIgnoreCase("chat")) {
-                cmdChat(sender, command, label, args, 0);
-                return true;
-            } else if (label.equalsIgnoreCase("chatstyle") || label.equalsIgnoreCase("cstyle")) {
-                cmdStyle(sender, command, label, args, 0);
-                return true;
-            } else {
+        if (label.equalsIgnoreCase("chat")) {
+            cmdChat(sender, label, args, 0);
+            return true;
+        } else if (label.equalsIgnoreCase("chatstyle") || label.equalsIgnoreCase("cstyle")) {
+            cmdFormat(sender, label, args, 0);
+            return true;
+        } else {
+            if (args.length > 0) {
                 switch (args[0].toLowerCase()) {
+                    /* Send a chat message */
                     case "chat":
-                        cmdChat(sender, command, label, args, 1);
+                        cmdChat(sender, label, args, 1);
                         return true;
 
-                    /* Default format info */
+                    /* View/set default format */
                     case "default":
-                        cmdDefault(sender, command, label, args);
+
                         return true;
 
-                    /* Format info command */
+                    /* Show format info */
                     case "info":
-                        cmdInfo(sender, command, label, args);
+
                         return true;
 
-                    /* List formats command */
+                    /* List formats */
                     case "list":
-                        cmdList(sender, command, label, args);
+                        cmdList(sender);
                         return true;
 
-                    /* Reload config command */
+                    /* Reload plugin configuration command */
                     case "reload":
-                        cmdReload(sender, command, label, args);
+                        cmdReload(sender);
                         return true;
 
-                    /* Save data command */
+                    /* Save plugin data command */
                     case "save":
-                        cmdSave(sender, command, label, args);
+                        cmdSave(sender);
                         return true;
 
-                    /* Change format command */
+                    /* Change current chat format */
                     case "style":case "format":
-                        cmdStyle(sender, command, label, args, 1);
+                        cmdFormat(sender, label, args, 1);
                         return true;
 
-                    /* Version command */
-                    case "version":case "about":
-                        cmdVersion(sender, command, label, args);
+                    /* Plugin version command */
+                    case "version":
+                        cmdVersion(sender);
                         return true;
+
+                    default:
+                        ErrorMessages.UNKNOWN_COMMAND.sendTo(sender);
+                        break;
                 }
             }
-        }
-        if (PlayerUtils.isSenderPlayer(sender)) {
-            NoticeMessage.FORMAT_NOTICE.sendTo(sender, plugin.getPlayerManager().getFormat((Player) sender).getName());
-        } else {
-            sender.sendMessage("polished help coming soon");
-            sender.sendMessage("commands: default, info, list, reload, save, style/format, version/about");
         }
         return true;
     }
 
-    /*
-     * Send chat message (mainly for console usage)
-     */
-    private void cmdChat(CommandSender sender, Command command, String label, String[] args, int startIndex) {
-        if (!PermissionNode.CHAT.isAllowed(sender, true)) return;
+    private Chatter getChatter(CommandSender sender) {
+        if (sender instanceof ConsoleCommandSender) {
+            return plugin.getChatManager().getConsoleChatter();
+        } else if (sender instanceof Player) {
+            return plugin.getChatManager().getPlayerChatter((Player) sender);
+        } else {
+            return null;
+        }
+    }
+
+    private void cmdChat(CommandSender sender, String label, String[] args, int startIndex) {
+        if (!PermissionNode.CHAT.isAllowedAlert(sender)) return;
 
         if (args.length < startIndex + 1) {
-            UsageMessage.CHAT.sendTo(sender, label);
+            UsageMessages.CHATOMIZER_CHAT.sendTo(sender, new QuickMap<>("{LABEL}", label).build());
             return;
         }
 
-        Chatter chatter = plugin.getChatterManager().getChatter(sender.getName());
+        Chatter chatter = getChatter(sender);
         if (chatter == null) {
-            ErrorMessage.UNABLE_TO_CHAT.sendTo(sender);
+            ErrorMessages.UNABLE_TO_CHAT.sendTo(sender);
             return;
         }
 
@@ -135,110 +141,100 @@ public class CmdChatomizer implements CommandExecutor {
         ChatomizerAPI.createChatEvent(chatter, message.toString());
     }
 
-    /*
-     * Default format info/set default format
-     */
-    private void cmdDefault(CommandSender sender, Command command, String label, String[] args) {
-        if (!PermissionNode.STYLE_DEFAULT.isAllowed(sender, true)) return;
-
-        if (args.length == 1) {
-            NoticeMessage.FORMAT_DEFAULT_NOTICE.sendTo(sender, plugin.getFormatManager().getDefaultFormat().getName());
-        } else {
-            String formatName = args[1];
-            ChatFormat format = plugin.getFormatManager().getFormat(formatName);
-            if (format == null) {
-                ErrorMessage.FORMAT_INVALID.sendTo(sender, formatName);
-            } else if (plugin.getFormatManager().setDefaultFormat(format)) {
-                NoticeMessage.FORMAT_DEFAULT_SET.sendTo(sender, format.getName());
-            } else {
-                ErrorMessage.FORMAT_DEFAULT_ALREADY_SET.sendTo(sender, format.getName());
-            }
-        }
-    }
-
-    /*
-     * Get format info command
-     */
-    private void cmdInfo(CommandSender sender, Command command, String label, String[] args) {
-        if (!PermissionNode.STYLE_INFO.isAllowed(sender, true)) {
-            return;
-        } else if (args.length < 2) {
-            UsageMessage.STYLE_INFO.sendTo(sender, label);
-            return;
-        }
-
-        ChatFormat format = plugin.getFormatManager().doesFormatExist(args[1]) ? plugin.getFormatManager().getFormat(args[1]) : null;
-        if (format == null) {
-            ErrorMessage.FORMAT_INVALID.sendTo(sender, args[1]);
-        } else {
-            sender.sendMessage(ChatColor.DARK_GRAY + "=====" + ChatColor.GREEN + "Format: " + ChatColor.GOLD + format.getName() + ChatColor.DARK_GRAY + "=====");
-            sender.sendMessage(ChatColor.RED + "Creator: " + ChatColor.YELLOW + format.getCreator());
-            sender.sendMessage(ChatColor.RED + "Default format: " + ChatColor.YELLOW + format.getDefaultFormat());
-            for (Entry<String, String> entry : format.getAllFormats().entrySet()) {
-                sender.sendMessage(ChatColor.RED + entry.getKey() + ": " + ChatColor.YELLOW + entry.getValue());
-            }
-        }
-    }
-
-    /*
-     * List styles command
-     */
-    private void cmdList(CommandSender sender, Command command, String label, String[] args) {
-        if (!PermissionNode.STYLE_LIST.isAllowed(sender, true)) return;
+    /* List formats */
+    private void cmdList(CommandSender sender) {
+        if (!PermissionNode.FORMATS_LIST.isAllowedAlert(sender)) return;
 
         boolean isPlayer = sender instanceof Player;
 
-        StringBuilder list = new StringBuilder();
+        Chatter chatter = getChatter(sender);
+        if (chatter == null) {
+            ErrorMessages.UNABLE_TO_CHAT.sendTo(sender);
+            return;
+        }
+
+        String curFormat = chatter.getChatFormat();
+
+        FancyMessage list = new FancyMessage();
+        boolean started = false;
         for (ChatFormat format : plugin.getFormatManager().getAllowedFormats(sender)) {
             if (!format.isHidden()) {
-                if (list.length() > 0)
-                    list.append(ChatColor.DARK_GRAY).append(", ");
+                if (started)
+                    list.then(", ").color(ChatColor.DARK_GRAY);
+
                 if (isPlayer) {
-                    list.append(plugin.getPlayerManager().getFormat(sender.getName()).equals(format) ? ChatColor.GREEN : ChatColor.YELLOW).append(format.getName());
+                    try {
+                        list.then(format.getName());
+                    } catch (Exception ex) {
+                        list.text(format.getName());
+                    }
+                    list.color(format.getName().equals(curFormat) ? ChatColor.GREEN : ChatColor.YELLOW);
                 } else {
-                    list.append(ChatColor.YELLOW).append(format.getName());
+                    try {
+                        list.then(format.getName());
+                    } catch (Exception ex) {
+                        list.text(format.getName());
+                    }
+                    list.color(ChatColor.YELLOW);
                 }
+
+                list.formattedTooltip(new FancyMessage().text("Click to select format").color(ChatColor.GREEN))
+                    .command("/cstyle " + format.getName());
+
+                started = true;
             }
         }
         sender.sendMessage(ChatColor.DARK_GRAY + "=====" + ChatColor.GREEN + "Chat Formats" + ChatColor.DARK_GRAY + "=====");
-        sender.sendMessage(list.length() == 0 ? "" + ChatColor.RED + ChatColor.ITALIC + "Nothing here" : ChatColor.YELLOW + list.toString());
+        if (list.toOldMessageFormat().length() == 0) {
+            PluginMessages.FORMATS_LIST_NONE.sendTo(sender);
+        } else {
+            if (isPlayer) {
+                list.send((Player) sender);
+            } else {
+                sender.sendMessage(list.toOldMessageFormat());
+            }
+        }
     }
 
-    /*
-     * Reload plugin data from disk
-     */
-    private void cmdReload(CommandSender sender, Command command, String label, String[] args) {
-        if (!PermissionNode.ADMIN_RELOAD.isAllowed(sender, true)) return;
+    /* Reload configuration */
+    private void cmdReload(CommandSender sender) {
+        if (!PermissionNode.RELOAD.isAllowedAlert(sender)) return;
 
-        plugin.reloadConfig();
-        plugin.getFormatManager().reloadFormats();
-        plugin.getPlayerManager().reloadPlayers();
-        NoticeMessage.PLUGIN_RELOADED.sendTo(sender);
+        try {
+            plugin.reloadAll();
+            NoticeMessages.PLUGIN_RELOADED.sendTo(sender);
+        } catch (Exception ex) {
+            ErrorMessages.RELOAD_ERROR.sendTo(sender, new QuickMap<>("{MESSAGE}", ex.getMessage()).build());
+        }
     }
 
-    /*
-     * Save plugin data to disk
-     */
-    private void cmdSave(CommandSender sender, Command command, String label, String[] args) {
-        if (!PermissionNode.ADMIN_SAVE.isAllowed(sender, true)) return;
+    /* Save data */
+    private void cmdSave(CommandSender sender) {
+        if (!PermissionNode.SAVE.isAllowedAlert(sender)) return;
 
-        plugin.saveAll();
-        NoticeMessage.PLUGIN_SAVED.sendTo(sender);
+        try {
+            plugin.saveAll();
+            NoticeMessages.PLUGIN_SAVED.sendTo(sender);
+        } catch (Exception ex) {
+            ErrorMessages.SAVE_ERROR.sendTo(sender, new QuickMap<>("{MESSAGE}", ex.getMessage()).build());
+        }
     }
 
-    /*
-     * Change style command
-     */
-    private void cmdStyle(CommandSender sender, Command command, String label, String[] args, int startIndex) {
-        if (!PermissionNode.STYLE_CHANGE.isAllowed(sender, true)) return;
+    /* Set chat format command */
+    private void cmdFormat(CommandSender sender, String label, String[] args, int startIndex) {
+        if (!PermissionNode.FORMATS_CHANGE.isAllowedAlert(sender)) return;
 
-        if (!PlayerUtils.isSenderPlayer(sender, ErrorMessage.MUST_BE_PLAYER.getMessage())) return;
+        Chatter chatter = getChatter(sender);
+        if (chatter == null) {
+            ErrorMessages.UNABLE_TO_GET_CHATTER.sendTo(sender);
+            return;
+        }
 
         if (args.length < startIndex + 1) {
             if (startIndex == 0) {
-                UsageMessage.STYLE_DIRECT.sendTo(sender, label);
+                UsageMessages.CHATOMIZER_FORMAT_DIRECT.sendTo(sender, new QuickMap<>("{LABEL}", label).build());
             } else {
-                UsageMessage.STYLE.sendTo(sender, label);
+                UsageMessages.CHATOMIZER_FORMAT.sendTo(sender, new QuickMap<>("{LABEL}", label).build());
             }
             return;
         }
@@ -246,32 +242,29 @@ public class CmdChatomizer implements CommandExecutor {
         String formatName = args[startIndex];
         ChatFormat format = plugin.getFormatManager().doesFormatExist(formatName) ? plugin.getFormatManager().getFormat(formatName) : null;
         if (format == null) {
-            Log.debug("format is null");
             if (StringUtils.equalsIgnoreCaseMultiple(formatName, "none", "default")) {
                 format = plugin.getFormatManager().getDefaultFormat();
             } else {
-                ErrorMessage.FORMAT_INVALID.sendTo(sender, args[startIndex]);
+                ErrorMessages.FORMAT_NOT_FOUND.sendTo(sender, new QuickMap<>("{FORMAT}", args[startIndex]).build());
                 return;
             }
-        } else if (!PermissionNode.STYLES.isAllowed(sender, format.getName().toLowerCase())) {
-            ErrorMessage.FORMAT_NO_PERMISSION.sendTo(sender, format.getName());
+        } else if (format.checkPermission() && !PermissionNode.FORMATS.isAllowed(sender, format.getName().toLowerCase())) {
+            ErrorMessages.NO_PERMISSION_FORMAT.sendTo(sender, new QuickMap<>("{FORMAT}", format.getName()).build());
             return;
         }
 
-        if (plugin.getPlayerManager().setFormat((Player) sender, format)) {
-            NoticeMessage.FORMAT_SET.sendTo(sender, format.getName());
+        if (chatter.setChatFormat(format.getName())) {
+            NoticeMessages.FORMAT_SET.sendTo(sender, new QuickMap<>("{FORMAT}", format.getName()).build());
         } else {
-            ErrorMessage.FORMAT_ALREADY_SET.sendTo(sender, format.getName());
+            ErrorMessages.FORMAT_ALREADY_SET.sendTo(sender, new QuickMap<>("{FORMAT}", format.getName()).build());
         }
     }
 
-    /*
-     * Version command
-     */
-    private void cmdVersion(CommandSender sender, Command command, String label, String[] args) {
-        sender.sendMessage(ChatColor.GREEN + plugin.getName() + ChatColor.GOLD + " v" + plugin.getDescription().getVersion());
-        sender.sendMessage(ChatColor.GOLD + "Created by Stealth2800");
-        sender.sendMessage(ChatColor.GOLD + "Website: " + ChatColor.AQUA + "http://stealthyone.com/bukkit");
+    /* Plugin version */
+    private void cmdVersion(CommandSender sender) {
+        sender.sendMessage("" + ChatColor.GREEN + ChatColor.BOLD + "Chatomizer" + ChatColor.GOLD + " v" + plugin.getDescription().getVersion());
+        sender.sendMessage("" + ChatColor.BLUE + ChatColor.ITALIC + "Created by Stealth2800");
+        sender.sendMessage("" + ChatColor.AQUA + ChatColor.UNDERLINE + "http://stealthyone.com/");
         UpdateChecker updateChecker = plugin.getUpdateChecker();
         if (updateChecker.checkForUpdates()) {
             String curVer = plugin.getDescription().getVersion();

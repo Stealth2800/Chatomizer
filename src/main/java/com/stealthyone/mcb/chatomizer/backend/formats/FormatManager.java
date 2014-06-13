@@ -1,6 +1,6 @@
 /*
  * Chatomizer - Advanced chat plugin with endless possibilities
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,20 +18,18 @@
  */
 package com.stealthyone.mcb.chatomizer.backend.formats;
 
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin.Log;
-import com.stealthyone.mcb.chatomizer.api.ChatFormat;
+import com.stealthyone.mcb.chatomizer.Chatomizer;
+import com.stealthyone.mcb.chatomizer.api.formats.ChatFormat;
 import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
-import com.stealthyone.mcb.chatomizer.utils.FileUtils;
-import com.stealthyone.mcb.chatomizer.utils.YamlFileManager;
+import com.stealthyone.mcb.stbukkitlib.logging.LogHelper;
+import com.stealthyone.mcb.stbukkitlib.storage.YamlFileManager;
+import com.stealthyone.mcb.stbukkitlib.utils.FileUtils;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,66 +37,71 @@ public class FormatManager {
 
     public final static String DEFAULT_FORMAT = "<{SENDER}> {MESSAGE}";
 
-    private ChatomizerPlugin plugin;
+    private Chatomizer plugin;
 
-    private YamlFileManager formatFile;
-    private Map<String, ChatFormat> loadedFormats = new LinkedHashMap<String, ChatFormat>();
+    private String defaultFormat;
+    private String defaultGroup;
 
-    public FormatManager(ChatomizerPlugin plugin) {
+    private File formatDir;
+    private Map<String, ChatFormat> loadedFormats = new HashMap<>();
+
+    public FormatManager(Chatomizer plugin) {
         this.plugin = plugin;
-        formatFile = new YamlFileManager(plugin.getDataFolder() + File.separator + "chatFormats.yml");
-        if (formatFile.isEmpty()) {
+    }
+
+    public void load() {
+        formatDir = new File(plugin.getDataFolder() + File.separator + "formats");
+        formatDir.mkdir();
+        reload();
+    }
+
+    public void reload() {
+        if (formatDir.listFiles().length == 0) {
             try {
-                FileUtils.copyFileFromJar(plugin, "chatFormats.yml");
+                FileUtils.copyFileFromJar(plugin, "defaultFormat.yml", new File(formatDir + File.separator + "default.yml"));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
-        Log.info("Loaded " + reloadFormats() + " chat formats.");
+
+        defaultFormat = plugin.getConfig().getString("Default format", "default");
+        defaultGroup = plugin.getConfig().getString("Default group", "default");
+
+        for (File file : formatDir.listFiles()) {
+            if (file.getName().matches("[a-z0-9]+.yml")) {
+                loadFormat(new YamlFileManager(file));
+            }
+        }
     }
 
-    public int reloadFormats() {
-        formatFile.reloadConfig();
-        loadedFormats.clear();
-        FileConfiguration config = formatFile.getConfig();
-        for (String name : config.getKeys(false)) {
-            loadFormat(name);
-        }
-
-        if (!loadedFormats.containsKey("default")) {
-            Log.info("Default chat format not found, creating now.");
-            config.set("default.format", DEFAULT_FORMAT);
-            loadFormat("default");
-        }
-
-        return loadedFormats.size();
+    public void save() {
+        plugin.getConfig().set("Default format", defaultFormat);
+        plugin.getConfig().set("Default group", defaultGroup);
     }
 
-    public ChatFormat loadFormat(String name) {
-        ConfigurationSection config = formatFile.getConfig().getConfigurationSection(name);
-        if (config != null && config.getKeys(false).size() != 0) {
-            ChatFormat format = new ChatFormat(config);
-            loadedFormats.put(format.getName().toLowerCase(), format);
-            return format;
+    public boolean loadFormat(YamlFileManager file) {
+        ChatFormatFile format;
+        try {
+            format = new ChatFormatFile(file);
+        } catch (Exception ex) {
+            plugin.getLogger().warning("Unable to load format from file: '" + file.getName() + "' - " + ex.getMessage());
+            return false;
         }
-        return null;
+        loadedFormats.put(format.getName().toLowerCase(), format);
+        LogHelper.debug(plugin, "Loaded chat format '" + format.getName() + "'");
+        return true;
     }
 
     public ChatFormat getFormat(String name) {
-        ChatFormat format = name.equalsIgnoreCase("<default>") ? getDefaultFormat() : loadedFormats.get(name.toLowerCase());
+        ChatFormat format = loadedFormats.get(name.toLowerCase());
         if (format == null) {
-            if (name.equalsIgnoreCase(getDefaultFormatName())) {
-                formatFile.getConfig().set(name.toLowerCase() + ".format", DEFAULT_FORMAT);
-                loadFormat(name);
-            } else {
-                format = getDefaultFormat();
-            }
+            format = getDefaultFormat();
         }
         return format;
     }
 
     public String getDefaultFormatName() {
-        return formatFile.getConfig().getString("Default format", "default");
+        return defaultFormat;
     }
 
     public ChatFormat getDefaultFormat() {
@@ -108,18 +111,18 @@ public class FormatManager {
     public boolean setDefaultFormat(ChatFormat format) {
         String formatName = format.getName();
         if (!formatName.equalsIgnoreCase(getDefaultFormat().getName())) {
-            formatFile.getConfig().set("Default format", formatName);
+            defaultFormat = formatName;
             return true;
         }
         return false;
     }
 
     public String getDefaultGroup() {
-        return formatFile.getConfig().getString("Default group", "default");
+        return defaultGroup;
     }
 
     public boolean doesFormatExist(String name) {
-        return name.equalsIgnoreCase("<default>") || loadedFormats.containsKey(name.toLowerCase());
+        return name.equalsIgnoreCase("default") || loadedFormats.containsKey(name.toLowerCase());
     }
 
     public Map<String, ChatFormat> getLoadedFormats() {
@@ -127,9 +130,9 @@ public class FormatManager {
     }
 
     public List<ChatFormat> getAllowedFormats(CommandSender sender) {
-        List<ChatFormat> returnList = new ArrayList<ChatFormat>();
+        List<ChatFormat> returnList = new ArrayList<>();
         for (ChatFormat format : loadedFormats.values()) {
-            if (PermissionNode.STYLES.isAllowed(sender, format.getName().toLowerCase()))
+            if (!format.checkPermission() || (format.checkPermission() && PermissionNode.FORMATS.isAllowed(sender, format.getName().toLowerCase())))
                 returnList.add(format);
         }
         return returnList;

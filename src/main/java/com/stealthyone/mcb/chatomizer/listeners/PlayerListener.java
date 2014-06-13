@@ -1,6 +1,6 @@
 /*
- * Chatomizer - Basic chat plugin that allows players to choose what chat format they wish to use
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Chatomizer - Advanced chat plugin with endless possibilities
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,103 +18,45 @@
  */
 package com.stealthyone.mcb.chatomizer.listeners;
 
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
-import com.stealthyone.mcb.chatomizer.api.ChatFormat;
-import com.stealthyone.mcb.chatomizer.api.ChatModifier;
-import com.stealthyone.mcb.chatomizer.api.ChatomizerAPI;
-import com.stealthyone.mcb.chatomizer.api.events.AsyncPlayerMultiChatEvent;
-import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
-import com.stealthyone.mcb.chatomizer.backend.chatters.ChatterManager;
+import com.stealthyone.mcb.chatomizer.Chatomizer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
 
-    private ChatomizerPlugin plugin;
+    private Chatomizer plugin;
 
-    public PlayerListener(ChatomizerPlugin plugin) {
+    public PlayerListener(Chatomizer plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        plugin.getPlayerManager().updateUuid(e.getPlayer());
-        plugin.getPlayerManager().loadPlayer(e.getPlayer().getUniqueId());
+        plugin.getChatManager().loadPlayerChatter(e.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerChat(AsyncPlayerChatEvent e) {
-        if (e.isCancelled()) {
-            return;
-        } else {
-            e.setCancelled(true);
-        }
-
-        ChatterManager chatterManager = plugin.getChatterManager();
-        Set<Chatter> recipients = new HashSet<>();
-        for (Player recipient : e.getRecipients()) {
-            recipients.add(chatterManager.getChatter(recipient.getName()));
-        }
-        ChatomizerAPI.createChatEvent(chatterManager.getChatter(e.getPlayer().getName()), e.getMessage(), recipients);
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        playerLeave(e.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerMultiChat(AsyncPlayerMultiChatEvent e) {
-        Chatter sender = e.getSender();
+    @EventHandler
+    public void onPlayerKick(PlayerKickEvent e) {
+        playerLeave(e.getPlayer());
+    }
 
-        Map<String, String> genericModifications = new HashMap<>();
-        Map<String, ChatModifier> specificModifications = new HashMap<>();
-        for (Entry<String, ChatModifier> curModifier : plugin.getModifierManager().getRegisteredModifiers().entrySet()) {
-            if (!curModifier.getValue().isRecipientSpecific()) {
-                String replacement = curModifier.getValue().getReplacement(sender, null);
-                if (replacement != null) {
-                    genericModifications.put(curModifier.getKey(), replacement);
-                }
-            } else {
-                specificModifications.put(curModifier.getKey(), curModifier.getValue());
-            }
-        }
+    private void playerLeave(Player player) {
+        plugin.getChatManager().unloadPlayerChatter(player);
+    }
 
-        String senderGroup = plugin.getHookVault().getPermission().getPrimaryGroup(sender.getWorldName(), sender.getName());
-
-        for (Entry<Chatter, ChatFormat> curRecipient : e.getRecipients().entrySet()) {
-            Chatter recipient = curRecipient.getKey();
-            String eMessage = e.getChatterMessage(recipient);
-            if (eMessage != null && !eMessage.equals("")) {
-                ChatFormat format = curRecipient.getValue();
-                String finalMessage = format.getFormat(senderGroup).replace("{MESSAGE}", eMessage);
-
-                // Replace generic modifiers.
-                for (Entry<String, String> genericMod : genericModifications.entrySet()) {
-                    if (finalMessage.contains(genericMod.getKey())) {
-                        finalMessage = finalMessage.replace(genericMod.getKey(), genericMod.getValue());
-                    }
-                }
-
-                // Replace specific modifiers.
-                for (Entry<String, ChatModifier> specificMod : specificModifications.entrySet()) {
-                    if (finalMessage.contains(specificMod.getKey())) {
-                        String replacement = specificMod.getValue().getReplacement(sender, recipient);
-                        if (replacement != null) {
-                            finalMessage = finalMessage.replace(specificMod.getKey(), replacement);
-                        }
-                    }
-                }
-
-                // Send message.
-                recipient.sendMessage(finalMessage);
-            }
-        }
+    @EventHandler
+    public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
+        plugin.getChatManager().handleChatEvent(e);
     }
 
 }

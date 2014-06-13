@@ -1,6 +1,6 @@
 /*
  * Chatomizer - Advanced chat plugin with endless possibilities
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,51 +18,35 @@
  */
 package com.stealthyone.mcb.chatomizer.permissions;
 
-import com.stealthyone.mcb.chatomizer.messages.ErrorMessage;
+import com.stealthyone.mcb.chatomizer.messages.Messages.ErrorMessages;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 public enum PermissionNode {
 
-    ADMIN_RELOAD,
-    ADMIN_SAVE,
+    CHAT,
+    FORMATS_CHANGE,
+    FORMATS_LIST,
+    RELOAD,
+    SAVE;
 
-    CHAT(PermissionDefault.TRUE),
-    CHAT_COLOR,
-    CHAT_FORMATTING,
-    CHAT_MAGIC,
-
-    STYLE_CHANGE,
-    STYLE_DEFAULT,
-    STYLE_INFO,
-    STYLE_LIST;
-
-    private Permission permission;
+    private String permission;
 
     private PermissionNode() {
-        this(Permission.DEFAULT_PERMISSION);
-    }
-
-    private PermissionNode(PermissionDefault defaultState) {
-        permission = new Permission("chatomizer." + toString().toLowerCase().replace("_", "."), defaultState);
+        permission = "chatomizer." + toString().toLowerCase().replace("_", ".");
     }
 
     public boolean isAllowed(CommandSender sender) {
-        return isAllowed(sender, false);
+        return sender.hasPermission(permission);
     }
 
-    public boolean isAllowed(CommandSender sender, boolean alert) {
-        boolean value = sender.hasPermission(permission);
-        if (!value && alert)
-            ErrorMessage.NO_PERMISSION.sendTo(sender);
-        return value;
+    public boolean isAllowedAlert(CommandSender sender) {
+        boolean result = isAllowed(sender);
+        if (!result) {
+            ErrorMessages.NO_PERMISSION.sendTo(sender);
+        }
+        return result;
     }
 
-    public Permission getPermission() {
-        return permission;
-    }
-
-    public final static VariablePermissionNode STYLES = VariablePermissionNode.STYLES;
+    public final static VariablePermissionNode FORMATS = VariablePermissionNode.FORMATS;
 
 }

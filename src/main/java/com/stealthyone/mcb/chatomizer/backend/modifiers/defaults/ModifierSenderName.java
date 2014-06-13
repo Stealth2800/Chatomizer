@@ -1,6 +1,6 @@
 /*
  * Chatomizer - Advanced chat plugin with endless possibilities
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,8 @@
  */
 package com.stealthyone.mcb.chatomizer.backend.modifiers.defaults;
 
-import com.stealthyone.mcb.chatomizer.api.ChatModifier;
-import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.api.modifiers.ChatModifier;
 
 public class ModifierSenderName extends ChatModifier {
 

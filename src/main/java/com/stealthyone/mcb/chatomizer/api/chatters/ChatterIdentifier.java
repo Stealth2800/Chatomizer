@@ -16,24 +16,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.backend.modifiers.defaults;
+package com.stealthyone.mcb.chatomizer.api.chatters;
 
-import com.stealthyone.mcb.chatomizer.Chatomizer;
-import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
-import com.stealthyone.mcb.chatomizer.backend.chatters.PlayerChatter;
-import com.stealthyone.mcb.chatomizer.api.modifiers.ChatModifier;
-import net.milkbowl.vault.chat.Chat;
+public abstract class ChatterIdentifier {
 
-public class ModifierSenderVaultSuffix extends ChatModifier {
+    private String identification;
 
-    public ModifierSenderVaultSuffix() {
-        super("SSUFFIX", false);
+    public ChatterIdentifier(String identification) {
+        this.identification = identification;
     }
 
     @Override
-    public String getReplacement(Chatter sender, Chatter recipient) {
-        Chat chat = Chatomizer.getInstance().getHookVault().getChat();
-        return (chat == null || !(sender instanceof PlayerChatter)) ? "" : chat.getPlayerSuffix(sender.getWorldName(), sender.getName());
+    public String toString() {
+        return identification;
+    }
+
+    @Override
+    public int hashCode() {
+        return identification.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        } else if (obj instanceof ChatterIdentifier) {
+            return ((ChatterIdentifier) obj).identification.equals(this.identification);
+        } else {
+            return false;
+        }
+    }
+
+    public String getIdentification() {
+        return identification;
     }
 
 }

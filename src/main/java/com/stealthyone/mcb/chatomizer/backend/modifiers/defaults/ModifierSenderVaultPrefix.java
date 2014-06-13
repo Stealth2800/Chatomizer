@@ -1,6 +1,6 @@
 /*
  * Chatomizer - Advanced chat plugin with endless possibilities
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,10 +18,10 @@
  */
 package com.stealthyone.mcb.chatomizer.backend.modifiers.defaults;
 
-import com.stealthyone.mcb.chatomizer.ChatomizerPlugin;
-import com.stealthyone.mcb.chatomizer.api.ChatModifier;
-import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
-import com.stealthyone.mcb.chatomizer.backend.chatters.ChatterPlayer;
+import com.stealthyone.mcb.chatomizer.Chatomizer;
+import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.backend.chatters.PlayerChatter;
+import com.stealthyone.mcb.chatomizer.api.modifiers.ChatModifier;
 import net.milkbowl.vault.chat.Chat;
 
 public class ModifierSenderVaultPrefix extends ChatModifier {
@@ -32,8 +32,8 @@ public class ModifierSenderVaultPrefix extends ChatModifier {
 
     @Override
     public String getReplacement(Chatter sender, Chatter recipient) {
-        Chat chat = ChatomizerPlugin.getInstance().getHookVault().getChat();
-        return (chat == null || !(sender instanceof ChatterPlayer)) ? "" : chat.getPlayerPrefix(sender.getWorldName(), sender.getName());
+        Chat chat = Chatomizer.getInstance().getHookVault().getChat();
+        return (chat == null || !(sender instanceof PlayerChatter)) ? "" : chat.getPlayerPrefix(sender.getWorldName(), sender.getName());
     }
 
 }

@@ -1,6 +1,6 @@
 /*
  * Chatomizer - Advanced chat plugin with endless possibilities
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
  * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,28 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.api;
+package com.stealthyone.mcb.chatomizer.api.modifiers;
 
-import com.stealthyone.mcb.chatomizer.backend.chatters.Chatter;
+public interface ModifierManager {
 
-public abstract class ChatModifier {
+    /**
+     * Registers a chat modifier.
+     *
+     * @param modifier Modifier to register.
+     * @return True if successful.
+     *         False if modifier is already registered.
+     */
+    public boolean registerModifier(ChatModifier modifier);
 
-    private String code;
-    private boolean recipientSpecific;
-
-    public ChatModifier(String code, boolean recipientSpecific) {
-        this.code = "{" + code.toUpperCase() + "}";
-        this.recipientSpecific = recipientSpecific;
-    }
-
-    public final String getCode() {
-        return code;
-    }
-
-    public final boolean isRecipientSpecific() {
-        return recipientSpecific;
-    }
-
-    public abstract String getReplacement(Chatter sender, Chatter recipient);
+    /**
+     * Unregisters a chat modifier.
+     *
+     * @param modifier Modifier to unregister.
+     * @return True if successful.
+     *         False if modifier was never registered.
+     */
+    public boolean unregisterModifier(ChatModifier modifier);
 
 }

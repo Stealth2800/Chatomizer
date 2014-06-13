@@ -1,7 +1,7 @@
 /*
- * StBukkitLib - Set of useful Bukkit-related classes
- * Copyright (C) 2013 Stealth2800 <stealth2800@stealthyone.com>
- * Website: <http://google.com/>
+ * Chatomizer - Advanced chat plugin with endless possibilities
+ * Copyright (C) 2014 Stealth2800 <stealth2800@stealthyone.com>
+ * Website: <http://stealthyone.com/bukkit>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,22 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.utils;
+package com.stealthyone.mcb.chatomizer.backend.chatters;
 
-import org.bukkit.command.CommandSender;
+import com.stealthyone.mcb.chatomizer.api.chatters.ChatterIdentifier;
 import org.bukkit.entity.Player;
 
-public class PlayerUtils {
+public class PlayerChatterIdentifier extends ChatterIdentifier {
 
-    public static boolean isSenderPlayer(CommandSender sender) {
-        return sender instanceof Player;
+    public PlayerChatterIdentifier(Player player) {
+        super(player.getUniqueId().toString());
     }
 
-    public static boolean isSenderPlayer(CommandSender sender, String errorMessage) {
-        boolean result = sender instanceof Player;
-        if (!result && !errorMessage.equalsIgnoreCase(""))
-            sender.sendMessage(errorMessage);
-        return result;
+    public PlayerChatterIdentifier(PlayerChatter playerChatter) {
+        super(playerChatter.getUuid().toString());
     }
 
 }
