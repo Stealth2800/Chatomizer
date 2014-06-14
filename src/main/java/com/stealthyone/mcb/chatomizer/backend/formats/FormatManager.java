@@ -20,6 +20,7 @@ package com.stealthyone.mcb.chatomizer.backend.formats;
 
 import com.stealthyone.mcb.chatomizer.Chatomizer;
 import com.stealthyone.mcb.chatomizer.api.formats.ChatFormat;
+import com.stealthyone.mcb.chatomizer.api.formats.GroupFormat;
 import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
 import com.stealthyone.mcb.stbukkitlib.logging.LogHelper;
 import com.stealthyone.mcb.stbukkitlib.storage.YamlFileManager;
@@ -35,12 +36,11 @@ import java.util.Map;
 
 public class FormatManager {
 
-    public final static String DEFAULT_FORMAT = "<{SENDER}> {MESSAGE}";
-
     private Chatomizer plugin;
 
     private String defaultFormat;
     private String defaultGroup;
+    private GroupFormat defaultGroupFormat;
 
     private File formatDir;
     private Map<String, ChatFormat> loadedFormats = new HashMap<>();
@@ -51,21 +51,30 @@ public class FormatManager {
 
     public void load() {
         formatDir = new File(plugin.getDataFolder() + File.separator + "formats");
-        formatDir.mkdir();
         reload();
     }
 
     public void reload() {
-        if (formatDir.listFiles().length == 0) {
+        formatDir.mkdir();
+
+        if (defaultFormat != null) {
+            loadedFormats.remove(defaultFormat);
+        }
+
+        defaultFormat = plugin.getConfig().getString("Default format", "default");
+        defaultGroup = plugin.getConfig().getString("Default group", "default");
+        defaultGroupFormat = new GroupFormat(defaultGroup, "<{SNAME}> {MESSAGE}");
+
+        File defaultFormatFile = new File(formatDir + File.separator + defaultFormat + ".yml");
+        if (!defaultFormatFile.exists()) {
             try {
-                FileUtils.copyFileFromJar(plugin, "defaultFormat.yml", new File(formatDir + File.separator + "default.yml"));
+                FileUtils.copyFileFromJar(plugin, "defaultFormat.yml", defaultFormatFile);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
 
-        defaultFormat = plugin.getConfig().getString("Default format", "default");
-        defaultGroup = plugin.getConfig().getString("Default group", "default");
+        loadFormat(new YamlFileManager(defaultFormatFile));
 
         for (File file : formatDir.listFiles()) {
             if (file.getName().matches("[a-z0-9]+.yml")) {
@@ -119,6 +128,10 @@ public class FormatManager {
 
     public String getDefaultGroup() {
         return defaultGroup;
+    }
+
+    public GroupFormat getDefaultGroupFormat() {
+        return defaultGroupFormat;
     }
 
     public boolean doesFormatExist(String name) {

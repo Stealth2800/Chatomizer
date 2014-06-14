@@ -210,7 +210,7 @@ public class ChatomizerChatManager implements ChatManager {
         }
 
         for (Chatter recipient : e.getRecipients()) {
-            String finalMessage = e.getFormat(recipient).getGroupFormat(getChatterGroup(sender)).replace("{MESSAGE}", e.getMessage(recipient));
+            String finalMessage = e.getFormat(recipient).getGroupFormat(getChatterGroup(sender)).getFormat().replace("{MESSAGE}", e.getMessage(recipient));
 
             // Replace generic modifiers.
             for (Entry<String, String> genericMod : genericModifications.entrySet()) {

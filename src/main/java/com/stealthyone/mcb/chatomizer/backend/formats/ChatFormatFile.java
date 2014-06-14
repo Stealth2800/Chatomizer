@@ -20,6 +20,7 @@ package com.stealthyone.mcb.chatomizer.backend.formats;
 
 import com.stealthyone.mcb.chatomizer.Chatomizer;
 import com.stealthyone.mcb.chatomizer.api.formats.ChatFormat;
+import com.stealthyone.mcb.chatomizer.api.formats.GroupFormat;
 import com.stealthyone.mcb.stbukkitlib.storage.YamlFileManager;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -33,7 +34,8 @@ public class ChatFormatFile implements ChatFormat {
     private String creator = "" + ChatColor.RED + ChatColor.ITALIC + "<unknown>";
     private boolean isHidden = false;
     private boolean checkPermission = false;
-    private Map<String, String> groupFormats = new HashMap<String, String>();
+    private String defaultGroup = null;
+    private Map<String, GroupFormat> groupFormats = new HashMap<>();
 
     public ChatFormatFile(YamlFileManager file) {
         FileConfiguration config = file.getConfig();
@@ -52,7 +54,7 @@ public class ChatFormatFile implements ChatFormat {
                     //null, bypass
                     continue;
                 }
-                groupFormats.put(groupName.toLowerCase(), format);
+                groupFormats.put(groupName.toLowerCase(), new GroupFormat(groupName, format));
             }
         } catch (NullPointerException ex) {
             //No groups section, just add default
@@ -60,7 +62,7 @@ public class ChatFormatFile implements ChatFormat {
 
         String defaultName = Chatomizer.getInstance().getFormatManager().getDefaultGroup();
         if (!groupFormats.containsKey(defaultName)) {
-            groupFormats.put(defaultName, "<{SNAME}> {MESSAGE}");
+            groupFormats.put(defaultName.toLowerCase(), new GroupFormat(defaultName, "<{SNAME}> {MESSAGE}"));
         }
     }
 
@@ -69,34 +71,41 @@ public class ChatFormatFile implements ChatFormat {
         return !(object == null || !(object instanceof ChatFormat)) && ((ChatFormat) object).getName().equalsIgnoreCase(getName());
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getCreator() {
         return creator;
     }
 
+    @Override
     public boolean isHidden() {
         return isHidden;
     }
 
+    @Override
     public boolean checkPermission() {
         return checkPermission;
     }
 
-    public String getDefaultFormat() {
+    @Override
+    public GroupFormat getDefaultGroupFormat() {
         String defaultGroup = Chatomizer.getInstance().getFormatManager().getDefaultGroup();
-        String format = defaultGroup != null ? groupFormats.get(defaultGroup.toLowerCase()) : null;
-        return format != null ? format : FormatManager.DEFAULT_FORMAT;
+        GroupFormat format = this.defaultGroup != null ? groupFormats.get(this.defaultGroup.toLowerCase()) : groupFormats.get(defaultGroup);
+        return format != null ? format : Chatomizer.getInstance().getFormatManager().getDefaultGroupFormat();
     }
 
-    public String getGroupFormat(String groupName) {
-        String format = groupFormats.get(groupName.toLowerCase());
-        return ChatColor.translateAlternateColorCodes('&', format != null ? format : getDefaultFormat());
+    @Override
+    public GroupFormat getGroupFormat(String groupName) {
+        GroupFormat format = groupFormats.get(groupName.toLowerCase());
+        return format != null ? format : getDefaultGroupFormat();
     }
 
-    public Map<String, String> getAllFormats() {
+    @Override
+    public Map<String, GroupFormat> getAllGroupFormats() {
         return groupFormats;
     }
 
