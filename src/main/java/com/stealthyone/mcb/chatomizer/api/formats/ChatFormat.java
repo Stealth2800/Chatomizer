@@ -20,18 +20,63 @@ package com.stealthyone.mcb.chatomizer.api.formats;
 
 import java.util.Map;
 
+/**
+ * Represents a chat format.
+ */
 public interface ChatFormat {
 
+    /**
+     * Returns the name of the chat format.
+     *
+     * @return The name of the chat format.
+     */
     public String getName();
 
+    /**
+     * Returns the creator of the chat format.
+     *
+     * @return The creator of the chat format.
+     */
     public String getCreator();
 
+    /**
+     * Whether or not to hide the format in the /chatomizer list command.
+     *
+     * @return True to hide the format.
+     *         False to show the format.
+     */
     public boolean isHidden();
 
+    /**
+     * Whether or not to perform a permission check when a player selects the format.
+     * Permission node: chatomizer.formats.<name>
+     *
+     * @return True to perform permission check.
+     *         False to ignore permission check.
+     */
     public boolean checkPermission();
 
-    public String getGroupFormat(String groupName);
+    /**
+     * Returns the default group format.
+     *
+     * @return The default group format.
+     */
+    public GroupFormat getDefaultGroupFormat();
 
-    public Map<String, String> getAllFormats();
+    /**
+     * Returns a group format for a given group.
+     *
+     * @param groupName Group format for a given group.
+     * @return Name of group to retrieve format for.
+     */
+    public GroupFormat getGroupFormat(String groupName);
+
+    /**
+     * Returns a map of all available group formats.
+     * Structure: <Group name, Group's format>
+     *
+     * @return Map of all available group formats.
+     */
+    public Map<String, GroupFormat> getAllGroupFormats();
 
 }
