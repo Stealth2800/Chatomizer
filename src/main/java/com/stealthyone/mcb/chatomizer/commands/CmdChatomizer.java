@@ -19,9 +19,10 @@
 package com.stealthyone.mcb.chatomizer.commands;
 
 import com.stealthyone.mcb.chatomizer.Chatomizer;
-import com.stealthyone.mcb.chatomizer.api.formats.ChatFormat;
 import com.stealthyone.mcb.chatomizer.api.ChatomizerAPI;
 import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
+import com.stealthyone.mcb.chatomizer.api.formats.ChatFormat;
+import com.stealthyone.mcb.chatomizer.api.formats.GroupFormat;
 import com.stealthyone.mcb.chatomizer.messages.Messages.ErrorMessages;
 import com.stealthyone.mcb.chatomizer.messages.Messages.NoticeMessages;
 import com.stealthyone.mcb.chatomizer.messages.Messages.PluginMessages;
@@ -37,6 +38,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Map.Entry;
 
 public class CmdChatomizer implements CommandExecutor {
 
@@ -64,12 +67,12 @@ public class CmdChatomizer implements CommandExecutor {
 
                     /* View/set default format */
                     case "default":
-
+                        cmdDefault(sender, args);
                         return true;
 
                     /* Show format info */
                     case "info":
-
+                        cmdInfo(sender, label, args);
                         return true;
 
                     /* List formats */
@@ -141,6 +144,47 @@ public class CmdChatomizer implements CommandExecutor {
         ChatomizerAPI.createChatEvent(chatter, message.toString());
     }
 
+    /* Set/view default format */
+    private void cmdDefault(CommandSender sender, String[] args) {
+        if (!PermissionNode.FORMATS_DEFAULT.isAllowedAlert(sender)) return;
+
+        if (args.length == 1) {
+            NoticeMessages.FORMAT_DEFAULT_NOTICE.sendTo(sender, new QuickMap<>("{FORMAT}", plugin.getFormatManager().getDefaultFormat().getName()).build());
+        } else {
+            String formatName = args[1];
+            ChatFormat format = plugin.getFormatManager().getFormat(formatName);
+            if (format == null) {
+                ErrorMessages.FORMAT_NOT_FOUND.sendTo(sender, new QuickMap<>("{FORMAT}", formatName).build());
+            } else if (plugin.getFormatManager().setDefaultFormat(format)) {
+                NoticeMessages.FORMAT_DEFAULT_SET.sendTo(sender, new QuickMap<>("{FORMAT}", format.getName()).build());
+            } else {
+                ErrorMessages.FORMAT_DEFAULT_ALREADY_SET.sendTo(sender, new QuickMap<>("{FORMAT}", format.getName()).build());
+            }
+        }
+    }
+
+    /* Show format info */
+    private void cmdInfo(CommandSender sender, String label, String[] args) {
+        if (!PermissionNode.FORMATS_INFO.isAllowedAlert(sender)) {
+            return;
+        } else if (args.length < 2) {
+            UsageMessages.CHATOMIZER_FORMAT_INFO.sendTo(sender, new QuickMap<>("{LABEL}", label).build());
+            return;
+        }
+
+        ChatFormat format = plugin.getFormatManager().doesFormatExist(args[1]) ? plugin.getFormatManager().getFormat(args[1]) : null;
+        if (format == null) {
+            ErrorMessages.FORMAT_NOT_FOUND.sendTo(sender, new QuickMap<>("{FORMAT}", args[1]).build());
+        } else {
+            sender.sendMessage(ChatColor.DARK_GRAY + "=====" + ChatColor.GREEN + "Format: " + ChatColor.GOLD + format.getName() + ChatColor.DARK_GRAY + "=====");
+            sender.sendMessage(ChatColor.RED + "Creator: " + ChatColor.YELLOW + format.getCreator());
+            sender.sendMessage(ChatColor.RED + "Default group: " + ChatColor.YELLOW + format.getDefaultGroupFormat());
+            for (Entry<String, GroupFormat> entry : format.getAllGroupFormats().entrySet()) {
+                sender.sendMessage(ChatColor.RED + entry.getKey() + ": " + ChatColor.YELLOW + entry.getValue().getFormatRaw());
+            }
+        }
+    }
+
     /* List formats */
     private void cmdList(CommandSender sender) {
         if (!PermissionNode.FORMATS_LIST.isAllowedAlert(sender)) return;
@@ -184,7 +228,8 @@ public class CmdChatomizer implements CommandExecutor {
                 started = true;
             }
         }
-        sender.sendMessage(ChatColor.DARK_GRAY + "=====" + ChatColor.GREEN + "Chat Formats" + ChatColor.DARK_GRAY + "=====");
+
+        PluginMessages.FORMATS_LIST.sendTo(sender);
         if (list.toOldMessageFormat().length() == 0) {
             PluginMessages.FORMATS_LIST_NONE.sendTo(sender);
         } else {
