@@ -18,11 +18,22 @@
  */
 package com.stealthyone.mcb.chatomizer.api.chatters;
 
-public abstract class ChatterIdentifier {
+import org.apache.commons.lang.Validate;
+
+/**
+ * Identifies a chatter.
+ */
+public class ChatterIdentifier {
 
     private String identification;
 
+    /**
+     * Creates a new chatter identification instance.
+     *
+     * @param identification The unique identification for the chatter.
+     */
     public ChatterIdentifier(String identification) {
+        Validate.notNull(identification, "Identification cannot be null.");
         this.identification = identification;
     }
 
@@ -47,6 +58,11 @@ public abstract class ChatterIdentifier {
         }
     }
 
+    /**
+     * Returns the raw identification represented by the identifier.
+     *
+     * @return The raw identification.
+     */
     public String getIdentification() {
         return identification;
     }

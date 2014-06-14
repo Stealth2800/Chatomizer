@@ -19,13 +19,25 @@
 package com.stealthyone.mcb.chatomizer.api.modifiers;
 
 import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
+import org.apache.commons.lang.Validate;
 
+/**
+ * Represents a chat modifier.
+ */
 public abstract class ChatModifier {
 
     private String code;
     private boolean recipientSpecific;
 
+    /**
+     * Creates a new chat modifier.
+     *
+     * @param code Code to replace in chat. (Ex. "{GUILD}")
+     * @param recipientSpecific Whether or not this chat modifier is recipient specific.
+     */
     public ChatModifier(String code, boolean recipientSpecific) {
+        Validate.notNull(code, "Code cannot be null.");
+
         this.code = "{" + code.toUpperCase() + "}";
         this.recipientSpecific = recipientSpecific;
     }
@@ -38,6 +50,15 @@ public abstract class ChatModifier {
         return recipientSpecific;
     }
 
+    /**
+     * Returns the replacement for a specified sender and optional recipient.
+     *
+     * @param sender Sender of the message containing the code.
+     * @param recipient Recipient of the message containing the code.
+     *                  NOTE: If you use this variable, you need to mark this chat modifier as recipientSpecific = true
+     * @return The replacement for a specified sender and recipient.
+     *         Return null or an empty string if there is no replacement.
+     */
     public abstract String getReplacement(Chatter sender, Chatter recipient);
 
 }

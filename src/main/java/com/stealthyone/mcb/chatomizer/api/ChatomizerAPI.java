@@ -22,6 +22,9 @@ import com.stealthyone.mcb.chatomizer.Chatomizer;
 import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
 import com.stealthyone.mcb.chatomizer.api.modifiers.ModifierManager;
 
+/**
+ * Static access class to Chatomizer's API.
+ */
 public final class ChatomizerAPI {
 
     private ChatomizerAPI() { }

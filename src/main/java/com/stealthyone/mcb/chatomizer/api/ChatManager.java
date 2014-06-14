@@ -22,6 +22,10 @@ import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
 import com.stealthyone.mcb.chatomizer.api.chatters.ChatterIdentifier;
 import org.bukkit.entity.Player;
 
+/**
+ * Represents Chatomizer's chat manager.
+ * The chat manager tracks chatters and the sending/handling of the chat event.
+ */
 public interface ChatManager {
 
     /**

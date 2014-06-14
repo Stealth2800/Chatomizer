@@ -18,6 +18,9 @@
  */
 package com.stealthyone.mcb.chatomizer.api.chatters;
 
+/**
+ * Represents a chatter.
+ */
 public abstract class Chatter {
 
     private String chatFormat = null;
@@ -35,10 +38,22 @@ public abstract class Chatter {
         }
     }
 
+    /**
+     * Returns the name of the chatter's current chat format.
+     *
+     * @return The name of the chatter's chat format.
+     */
     public String getChatFormat() {
         return chatFormat;
     }
 
+    /**
+     * Sets the chatter's current format.
+     *
+     * @param chatFormat Name of the chat format to set.
+     * @return True if successful.
+     *         False if the input format is already set for the chatter.
+     */
     public boolean setChatFormat(String chatFormat) {
         if ((this.chatFormat == null && chatFormat == null)
                 || (this.chatFormat != null && chatFormat != null && this.chatFormat.equalsIgnoreCase(chatFormat))) {
@@ -48,18 +63,40 @@ public abstract class Chatter {
         return true;
     }
 
+    /**
+     * Returns whether or not the chatter is muted.
+     *
+     * @return True if the chatter is muted.
+     *         False if the chatter is not muted.
+     */
     public boolean isMuted() {
         return muted;
     }
 
+    /**
+     * Sets the muted status for the chatter.
+     *
+     * @param muted True to mute the chatter.
+     *              False to unmute the chatter.
+     */
     public void setMuted(boolean muted) {
         this.muted = muted;
     }
 
+    /**
+     * Returns the chatter identifier for this chatter.
+     *
+     * @return The chatter identifier. CANNOT BE NULL. MUST be set before registering the chatter with Chatomizer.
+     */
     public final ChatterIdentifier getIdentifier() {
         return identifier;
     }
 
+    /**
+     * Sets the chatter identifier for this chatter.
+     *
+     * @param identifier The chatter identifier. CANNOT BE NULL. MUST be set before registering the chatter with Chatomizer.
+     */
     public void setIdentifier(ChatterIdentifier identifier) {
         if (this.identifier != null) {
             throw new IllegalStateException("ChatterIdentifier has already been defined.");
@@ -67,14 +104,38 @@ public abstract class Chatter {
         this.identifier = identifier;
     }
 
+    /**
+     * Saves (if applicable) any data for the chatter.
+     */
     public abstract void save();
 
+    /**
+     * Returns the name of the chatter.
+     *
+     * @return The name of the chatter.
+     */
     public abstract String getName();
 
+    /**
+     * Returns the display name of the chatter.
+     *
+     * @return The display name of the chatter.
+     */
     public abstract String getDisplayName();
 
+    /**
+     * Returns the name of the world the chatter is in.
+     *
+     * @return Name of the chatter's current world.
+     *         Null if not applicable.
+     */
     public abstract String getWorldName();
 
+    /**
+     * Sends a message to the chatter.
+     *
+     * @param message Message to send to the chatter.
+     */
     public abstract void sendMessage(String message);
 
 }

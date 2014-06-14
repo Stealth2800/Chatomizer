@@ -18,6 +18,10 @@
  */
 package com.stealthyone.mcb.chatomizer.api.modifiers;
 
+/**
+ * Represents Chatomizer's modifier manager.
+ * The modifier manager manages all registered chat modifiers for use in chat events.
+ */
 public interface ModifierManager {
 
     /**
