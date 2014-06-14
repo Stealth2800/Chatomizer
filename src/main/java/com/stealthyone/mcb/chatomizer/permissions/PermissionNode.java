@@ -25,6 +25,8 @@ public enum PermissionNode {
 
     CHAT,
     FORMATS_CHANGE,
+    FORMATS_DEFAULT,
+    FORMATS_INFO,
     FORMATS_LIST,
     RELOAD,
     SAVE;

@@ -22,15 +22,6 @@ public class Messages {
 
     private Messages() { }
 
-    public static class AlertMessages {
-
-        private final static String CATEGORY = "alerts";
-
-        private AlertMessages() { }
-
-
-    }
-
     public static class ErrorMessages {
 
         private final static String CATEGORY = "errors";
@@ -38,8 +29,8 @@ public class Messages {
         private ErrorMessages() { }
 
         public final static ChatomizerMessageRef FORMAT_ALREADY_SET = new ChatomizerMessageRef(CATEGORY, "format_already_set");
+        public final static ChatomizerMessageRef FORMAT_DEFAULT_ALREADY_SET = new ChatomizerMessageRef(CATEGORY, "format_default_already_set");
         public final static ChatomizerMessageRef FORMAT_NOT_FOUND = new ChatomizerMessageRef(CATEGORY, "format_not_found");
-        public final static ChatomizerMessageRef MUST_BE_PLAYER = new ChatomizerMessageRef(CATEGORY, "must_be_player");
         public final static ChatomizerMessageRef NO_PERMISSION = new ChatomizerMessageRef(CATEGORY, "no_permission");
         public final static ChatomizerMessageRef NO_PERMISSION_FORMAT = new ChatomizerMessageRef(CATEGORY, "no_permission_format");
         public final static ChatomizerMessageRef RELOAD_ERROR = new ChatomizerMessageRef(CATEGORY, "reload_error");
@@ -56,6 +47,8 @@ public class Messages {
 
         private NoticeMessages() { }
 
+        public final static ChatomizerMessageRef FORMAT_DEFAULT_NOTICE = new ChatomizerMessageRef(CATEGORY, "format_default_notice");
+        public final static ChatomizerMessageRef FORMAT_DEFAULT_SET = new ChatomizerMessageRef(CATEGORY, "format_default_set");
         public final static ChatomizerMessageRef FORMAT_SET = new ChatomizerMessageRef(CATEGORY, "format_set");
         public final static ChatomizerMessageRef PLUGIN_RELOADED = new ChatomizerMessageRef(CATEGORY, "plugin_reloaded");
         public final static ChatomizerMessageRef PLUGIN_SAVED = new ChatomizerMessageRef(CATEGORY, "plugin_saved");
@@ -82,6 +75,7 @@ public class Messages {
         public final static ChatomizerMessageRef CHATOMIZER_CHAT = new ChatomizerMessageRef(CATEGORY, "chatomizer_chat");
         public final static ChatomizerMessageRef CHATOMIZER_FORMAT = new ChatomizerMessageRef(CATEGORY, "chatomizer_format");
         public final static ChatomizerMessageRef CHATOMIZER_FORMAT_DIRECT = new ChatomizerMessageRef(CATEGORY, "chatomizer_format_direct");
+        public final static ChatomizerMessageRef CHATOMIZER_FORMAT_INFO = new ChatomizerMessageRef(CATEGORY, "chatomizer_format_info");
 
     }
 
