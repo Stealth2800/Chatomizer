@@ -57,9 +57,7 @@ public class FormatManager {
     public void reload() {
         formatDir.mkdir();
 
-        if (defaultFormat != null) {
-            loadedFormats.remove(defaultFormat);
-        }
+        loadedFormats.clear();
 
         defaultFormat = plugin.getConfig().getString("Default format", "default");
         defaultGroup = plugin.getConfig().getString("Default group", "default");
