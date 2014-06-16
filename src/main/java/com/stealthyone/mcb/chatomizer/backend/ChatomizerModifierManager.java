@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stealthyone.mcb.chatomizer.backend.modifiers;
+package com.stealthyone.mcb.chatomizer.backend;
 
 import com.stealthyone.mcb.chatomizer.Chatomizer;
 import com.stealthyone.mcb.chatomizer.api.modifiers.ChatModifier;
