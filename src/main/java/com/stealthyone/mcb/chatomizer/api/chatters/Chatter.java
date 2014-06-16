@@ -132,6 +132,15 @@ public abstract class Chatter {
     public abstract String getWorldName();
 
     /**
+     * Returns whether or not the chatter has permission for a specified node.
+     *
+     * @param permission Permission node to check.
+     * @return True if the chatter has permission.
+     *         False if the chatter doesn't have permission.
+     */
+    public abstract boolean hasPermission(String permission);
+
+    /**
      * Sends a message to the chatter.
      *
      * @param message Message to send to the chatter.

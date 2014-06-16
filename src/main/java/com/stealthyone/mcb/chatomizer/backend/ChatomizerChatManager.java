@@ -24,8 +24,10 @@ import com.stealthyone.mcb.chatomizer.api.chatters.Chatter;
 import com.stealthyone.mcb.chatomizer.api.chatters.ChatterIdentifier;
 import com.stealthyone.mcb.chatomizer.backend.chatters.*;
 import com.stealthyone.mcb.chatomizer.api.modifiers.ChatModifier;
+import com.stealthyone.mcb.chatomizer.permissions.PermissionNode;
 import com.stealthyone.mcb.stbukkitlib.logging.LogHelper;
 import com.stealthyone.mcb.stbukkitlib.storage.YamlFileManager;
+import com.stealthyone.mcb.stbukkitlib.utils.ChatColorUtils;
 import com.stealthyone.mcb.stbukkitlib.utils.FileUtils;
 import net.milkbowl.vault.permission.Permission;
 import org.apache.commons.lang.Validate;
@@ -210,7 +212,10 @@ public class ChatomizerChatManager implements ChatManager {
         }
 
         for (Chatter recipient : e.getRecipients()) {
-            String finalMessage = e.getFormat(recipient).getGroupFormat(getChatterGroup(sender)).getFormat().replace("{MESSAGE}", e.getMessage(recipient));
+            String finalMessage = e.getFormat(recipient).getGroupFormat(getChatterGroup(sender)).getFormat();
+            if (sender.hasPermission(PermissionNode.CHAT_VARIABLES.toString())) {
+                finalMessage = finalMessage.replace("{MESSAGE}", e.getMessage(recipient));
+            }
 
             // Replace generic modifiers.
             for (Entry<String, String> genericMod : genericModifications.entrySet()) {
@@ -227,6 +232,22 @@ public class ChatomizerChatManager implements ChatManager {
                         finalMessage = finalMessage.replace(specificMod.getKey(), replacement);
                     }
                 }
+            }
+
+            if (!sender.hasPermission(PermissionNode.CHAT_VARIABLES.toString())) {
+                finalMessage = finalMessage.replace("{MESSAGE}", e.getMessage(recipient));
+            }
+
+            if (sender.hasPermission(PermissionNode.CHAT_COLORS.toString())) {
+                finalMessage = ChatColorUtils.colorizeString(finalMessage);
+            }
+
+            if (sender.hasPermission(PermissionNode.CHAT_FORMATS.toString())) {
+                finalMessage = ChatColorUtils.formatString(finalMessage);
+            }
+
+            if (sender.hasPermission(PermissionNode.CHAT_MAGIC.toString())) {
+                finalMessage = ChatColorUtils.magicfyString(finalMessage);
             }
 
             // Set final message.
