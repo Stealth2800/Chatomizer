@@ -59,6 +59,11 @@ public class PlayerChatter extends FileBasedChatter {
     }
 
     @Override
+    public boolean hasPermission(String permission) {
+        return getPlayer().hasPermission(permission);
+    }
+
+    @Override
     public void sendMessage(String message) {
         getPlayer().sendMessage(message);
     }

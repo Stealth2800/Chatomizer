@@ -30,6 +30,11 @@ public class ConsoleChatter extends FileBasedChatter {
     }
 
     @Override
+    public boolean isMuted() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return "CONSOLE";
     }
@@ -42,6 +47,11 @@ public class ConsoleChatter extends FileBasedChatter {
     @Override
     public String getWorldName() {
         return null;
+    }
+
+    @Override
+    public boolean hasPermission(String permission) {
+        return true;
     }
 
     @Override
