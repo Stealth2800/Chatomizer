@@ -20,7 +20,7 @@ package com.stealthyone.mcb.chatomizer;
 
 import com.stealthyone.mcb.chatomizer.backend.ChatomizerChatManager;
 import com.stealthyone.mcb.chatomizer.backend.formats.FormatManager;
-import com.stealthyone.mcb.chatomizer.backend.ChatomizerModifierManager;
+import com.stealthyone.mcb.chatomizer.backend.modifiers.ChatomizerModifierManager;
 import com.stealthyone.mcb.chatomizer.commands.CmdChatomizer;
 import com.stealthyone.mcb.chatomizer.hooks.VaultHook;
 import com.stealthyone.mcb.chatomizer.listeners.PlayerListener;
