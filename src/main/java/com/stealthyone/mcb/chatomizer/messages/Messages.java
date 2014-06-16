@@ -73,9 +73,11 @@ public class Messages {
         private UsageMessages() { }
 
         public final static ChatomizerMessageRef CHATOMIZER_CHAT = new ChatomizerMessageRef(CATEGORY, "chatomizer_chat");
+        public final static ChatomizerMessageRef CHATOMIZER_CHAT_DIRECT = new ChatomizerMessageRef(CATEGORY, "chatomizer_chat_direct");
         public final static ChatomizerMessageRef CHATOMIZER_FORMAT = new ChatomizerMessageRef(CATEGORY, "chatomizer_format");
         public final static ChatomizerMessageRef CHATOMIZER_FORMAT_DIRECT = new ChatomizerMessageRef(CATEGORY, "chatomizer_format_direct");
         public final static ChatomizerMessageRef CHATOMIZER_FORMAT_INFO = new ChatomizerMessageRef(CATEGORY, "chatomizer_format_info");
+        public final static ChatomizerMessageRef CHATOMIZER_HELP = new ChatomizerMessageRef(CATEGORY, "chatomizer_help");
 
     }
 

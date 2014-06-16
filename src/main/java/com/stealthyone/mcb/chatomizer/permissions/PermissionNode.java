@@ -24,6 +24,10 @@ import org.bukkit.command.CommandSender;
 public enum PermissionNode {
 
     CHAT,
+    CHAT_COLORS,
+    CHAT_FORMATS,
+    CHAT_MAGIC,
+    CHAT_VARIABLES,
     FORMATS_CHANGE,
     FORMATS_DEFAULT,
     FORMATS_INFO,
@@ -34,7 +38,12 @@ public enum PermissionNode {
     private String permission;
 
     private PermissionNode() {
-        permission = "chatomizer." + toString().toLowerCase().replace("_", ".");
+        permission = "chatomizer." + super.toString().toLowerCase().replace("_", ".");
+    }
+
+    @Override
+    public String toString() {
+        return permission;
     }
 
     public boolean isAllowed(CommandSender sender) {

@@ -1,0 +1,24 @@
+messages:
+- '&3Chatomizer is an advanced chat plugin for Bukkit'
+- '&bIt allows each player to have a different chat format and as a result, receive different messages as well'
+- '&cYou can type &6/{LABEL} help <subsection> to view other help pages'
+- '&e/{LABEL} version &8- &6Show plugin version'
+children:
+  admin:
+    options:
+      description: 'Information about admin commands'
+      permission: 'chatomizer.help.admin'
+    messages:
+    - '&e/{LABEL} reload &8- &6Reloads the plugin configuration'
+    - '&e/{LABEL} save &8- &6Saves the plugin data'
+    - '&e/{LABEL} chat <message> &8- &6Sends a chat message, useful for the console'
+    - '&bYou can also use &e/chat <message> &bto send a message'
+    - '&e/{LABEL} info <chat format> &8- &6View info on a chat format'
+  formats:
+    options:
+      description: 'Information about chat formats'
+    messages:
+    - '&e/{LABEL} list &8- &6Lists chat formats you have permission for'
+    - '&bOn the list command, you are able to hover over and click on chat formats to select them'
+    - '&e/{LABEL} format <format name> &8- &6Sets your current chat format'
+    - '&bYou can also use &e/cstyle <format name> &bto set your chat format'

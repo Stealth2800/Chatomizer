@@ -70,6 +70,10 @@ public class CmdChatomizer implements CommandExecutor {
                         cmdDefault(sender, args);
                         return true;
 
+                    case "help":
+                        plugin.getHelpManager().handleHelpCommand(null, sender, label, "help", args);
+                        return true;
+
                     /* Show format info */
                     case "info":
                         cmdInfo(sender, label, args);
@@ -106,6 +110,7 @@ public class CmdChatomizer implements CommandExecutor {
                 }
             }
         }
+        UsageMessages.CHATOMIZER_HELP.sendTo(sender, new QuickMap<>("{LABEL}", label).build());
         return true;
     }
 
@@ -119,11 +124,16 @@ public class CmdChatomizer implements CommandExecutor {
         }
     }
 
+    /* Send a chat message, mainly for console use */
     private void cmdChat(CommandSender sender, String label, String[] args, int startIndex) {
         if (!PermissionNode.CHAT.isAllowedAlert(sender)) return;
 
         if (args.length < startIndex + 1) {
-            UsageMessages.CHATOMIZER_CHAT.sendTo(sender, new QuickMap<>("{LABEL}", label).build());
+            if (label.equalsIgnoreCase("chat")) {
+                UsageMessages.CHATOMIZER_CHAT_DIRECT.sendTo(sender, new QuickMap<>("{LABEL}", label).build());
+            } else {
+                UsageMessages.CHATOMIZER_CHAT.sendTo(sender, new QuickMap<>("{LABEL}", label).build());
+            }
             return;
         }
 
@@ -134,7 +144,7 @@ public class CmdChatomizer implements CommandExecutor {
         }
 
         StringBuilder message = new StringBuilder();
-        for (int i = startIndex + 1; i < args.length; i++) {
+        for (int i = startIndex; i < args.length; i++) {
             if (message.length() > 0) {
                 message.append(" ");
             }
@@ -178,7 +188,7 @@ public class CmdChatomizer implements CommandExecutor {
         } else {
             sender.sendMessage(ChatColor.DARK_GRAY + "=====" + ChatColor.GREEN + "Format: " + ChatColor.GOLD + format.getName() + ChatColor.DARK_GRAY + "=====");
             sender.sendMessage(ChatColor.RED + "Creator: " + ChatColor.YELLOW + format.getCreator());
-            sender.sendMessage(ChatColor.RED + "Default group: " + ChatColor.YELLOW + format.getDefaultGroupFormat());
+            sender.sendMessage(ChatColor.RED + "Default group: " + ChatColor.YELLOW + format.getDefaultGroupFormat().getGroupName());
             for (Entry<String, GroupFormat> entry : format.getAllGroupFormats().entrySet()) {
                 sender.sendMessage(ChatColor.RED + entry.getKey() + ": " + ChatColor.YELLOW + entry.getValue().getFormatRaw());
             }

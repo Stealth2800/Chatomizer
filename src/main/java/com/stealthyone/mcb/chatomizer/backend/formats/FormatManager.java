@@ -96,9 +96,14 @@ public class FormatManager {
             plugin.getLogger().warning("Unable to load format from file: '" + file.getName() + "' - " + ex.getMessage());
             return false;
         }
-        loadedFormats.put(format.getName().toLowerCase(), format);
-        LogHelper.debug(plugin, "Loaded chat format '" + format.getName() + "'");
-        return true;
+        if (!loadedFormats.containsKey(format.getName().toLowerCase())) {
+            loadedFormats.put(format.getName().toLowerCase(), format);
+            LogHelper.debug(plugin, "Loaded chat format '" + format.getName() + "'");
+            return true;
+        } else {
+            LogHelper.debug(plugin, "Unable to load chat format from file '" + file.getName() + "' - a format named '" + format.getName() + "' is already loaded.");
+            return false;
+        }
     }
 
     public ChatFormat getFormat(String name) {

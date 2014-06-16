@@ -23,6 +23,8 @@ plugin:
 usages:
   tag: '&4USAGE: &c'
   chatomizer_chat: '{TAG}/{LABEL} chat <message>'
+  chatomizer_chat_direct: '{TAG}/{LABEL} <message>'
   chatomizer_format: '{TAG}/{LABEL} format <format name>'
   chatomizer_format_direct: '{TAG}/{LABEL} <format name>'
   chatomizer_format_info: '{TAG}/{LABEL} info <format name>'
+  chatomizer_help: '{TAG}/{LABEL} help'
