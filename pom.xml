@@ -146,6 +146,11 @@
                                     <pattern>mkremins.fanciful</pattern>
                                     <shadedPattern>com.stealthyone.mcb.chatomizer.shade.fanciful</shadedPattern>
                                 </relocation>
+
+                                <relocation>
+                                    <pattern>net.amoebaman.util</pattern>
+                                    <shadedPattern>com.stealthyone.mcb.chatomizer.shade.amoebamanutil</shadedPattern>
+                                </relocation>
                             </relocations>
 
                             <artifactSet>
