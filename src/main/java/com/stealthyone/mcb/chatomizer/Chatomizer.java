@@ -31,6 +31,9 @@ import com.stealthyone.mcb.stbukkitlib.messages.MessageManager;
 import com.stealthyone.mcb.stbukkitlib.updates.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
+
+import java.io.IOException;
 
 public class Chatomizer extends JavaPlugin implements Autosavable {
 
@@ -83,6 +86,13 @@ public class Chatomizer extends JavaPlugin implements Autosavable {
 
         /* Register commands */
         getCommand("chatomizer").setExecutor(new CmdChatomizer(this));
+
+        try {
+            Metrics metrics = new Metrics(this);
+            metrics.start();
+        } catch (IOException e) {
+            //Failed
+        }
 
         if (!Autosaver.scheduleForMe(this, this, getConfig().getInt("Autosave interval", 0))) {
             getLogger().warning("Autosaving disabled. It is recommended that you enable it in order to prevent data loss!");
