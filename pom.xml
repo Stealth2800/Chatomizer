@@ -6,7 +6,7 @@
 
     <groupId>com.stealthyone.mcb</groupId>
     <artifactId>chatomizer</artifactId>
-    <version>2.0.3-SNAPSHOT</version>
+    <version>175-2.0.3-SNAPSHOT</version>
     <name>Chatomizer</name>
     <url>http://stealthyone.com</url>
 
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.9-R0.3-SNAPSHOT</version>
+            <version>1.7.9-R0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
