@@ -32,6 +32,7 @@ import com.stealthyone.mcb.stbukkitlib.utils.FileUtils;
 import net.milkbowl.vault.permission.Permission;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -204,7 +205,7 @@ public class ChatomizerChatManager implements ChatManager {
             if (!curModifier.getValue().isRecipientSpecific()) {
                 String replacement = curModifier.getValue().getReplacement(sender, null);
                 if (replacement != null) {
-                    genericModifications.put(curModifier.getKey(), replacement);
+                    genericModifications.put(curModifier.getKey(), ChatColor.translateAlternateColorCodes('&', replacement));
                 }
             } else {
                 specificModifications.put(curModifier.getKey(), curModifier.getValue());
@@ -229,7 +230,7 @@ public class ChatomizerChatManager implements ChatManager {
                 if (finalMessage.contains(specificMod.getKey())) {
                     String replacement = specificMod.getValue().getReplacement(sender, recipient);
                     if (replacement != null) {
-                        finalMessage = finalMessage.replace(specificMod.getKey(), replacement);
+                        finalMessage = finalMessage.replace(specificMod.getKey(), ChatColor.translateAlternateColorCodes('&', replacement));
                     }
                 }
             }
